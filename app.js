@@ -488,7 +488,7 @@ function renderSimexPartAResult() {
     '<div class="simex-a-result-list">' + rows + '</div>' +
     '<button class="button button-primary" id="simex-a-again"><i data-lucide="shuffle"></i> Neue Zufallsauswahl</button></section>';
   refreshIcons();
-  $("[data-simex-review]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
+  $$("[data-simex-review]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
     renderSimexPartAReview(Number(button.dataset.simexReview));
   }));
   $("#simex-a-again").addEventListener("click", renderSimexPartASetup);
