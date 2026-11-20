@@ -437,8 +437,8 @@ function renderSimexPartAQuestion(task, index) {
   }).join("");
   const solution = isCorrected
     ? (task.unverified || !Number.isInteger(task.correct)
-      ? '<section class="simex-a-solution is-unverified"><strong>Hinweis zur Lösung</strong><p>' + simexPartAEscape(task.explanation || "Die richtige Antwort lässt sich aus den verfügbaren Angaben nicht sicher bestimmen.") + '</p><small>Diese Aufgabe wird nicht als richtig oder falsch gewertet.</small></section>'
-      : '<section class="simex-a-solution"><strong>Richtige Lösung: ' + String.fromCharCode(65 + task.correct) + ' – ' + simexPartAEscape(task.options[task.correct]) + '</strong><p>' + simexPartAEscape(task.explanation || "Die richtige Antwort ist markiert.") + '</p></section>')
+      ? '<section class="simex-a-solution is-unverified"><strong>Keine eindeutige Lösung verfügbar</strong><small>Diese Aufgabe wird nicht als richtig oder falsch gewertet.</small></section>'
+      : '<section class="simex-a-solution"><strong>Richtige Lösung: ' + String.fromCharCode(65 + task.correct) + ' – ' + simexPartAEscape(task.options[task.correct]) + '</strong></section>')
     : "";
   const scratch = task.givens ? '<div class="simex-a-givens"><div><span class="simex-a-stimulus-label">GEGEBEN</span>' +
     task.givens.map(pair => '<span><small>' + simexPartAEscape(pair[0]) + '</small><strong>' + simexPartAEscape(pair[1]) + '</strong></span>').join("") +
