@@ -78,101 +78,6 @@ const viewIcons = {
 
 
 
-const LEARNING_STATS_KEY = "esimex-learning-stats-v1";
-function readLearningStats(){
-  try{
-    const raw=localStorage.getItem(LEARNING_STATS_KEY);
-    const data=raw?JSON.parse(raw):{};
-    return {
-      secondsByDay:data.secondsByDay&&typeof data.secondsByDay==="object"?data.secondsByDay:{},
-      mastered:data.mastered&&typeof data.mastered==="object"?data.mastered:{}
-    };
-  }catch(e){return {secondsByDay:{},mastered:{}};}
-}
-function writeLearningStats(data){
-  try{localStorage.setItem(LEARNING_STATS_KEY,JSON.stringify(data));}catch(e){}
-}
-function localDayKey(date){
-  return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
-}
-function recordMasteredGoal(type,id){
-  if(!id)return;
-  const data=readLearningStats();
-  data.mastered[type+":"+id]=true;
-  writeLearningStats(data);
-  updateDashboardStats();
-}
-function getLearningDayStreak(secondsByDay){
-  const today=new Date();
-  let cursor=new Date(today.getFullYear(),today.getMonth(),today.getDate());
-  const todayKey=localDayKey(cursor);
-  if((secondsByDay[todayKey]||0)<60)cursor.setDate(cursor.getDate()-1);
-  let streak=0;
-  while((secondsByDay[localDayKey(cursor)]||0)>=60){
-    streak++;
-    cursor.setDate(cursor.getDate()-1);
-  }
-  return streak;
-}
-function updateDashboardStats(){
-  const main=$("#main-content");
-  if(!main||!main.querySelector(".stat-grid"))return;
-  const data=readLearningStats();
-  const mastered=Object.keys(data.mastered).filter(key=>data.mastered[key]).length;
-  const total=(typeof simexPartAPool!=="undefined"?simexPartAPool.length:0)+
-    (typeof flashTopics!=="undefined"?flashTopics.reduce((sum,topic)=>sum+topic.cards.length,0):0);
-  const percent=total?Math.min(100,Math.round(mastered/total*100)):0;
-  const totalSeconds=Object.values(data.secondsByDay).reduce((sum,value)=>sum+(Number(value)||0),0);
-  const hours=totalSeconds/3600;
-  const hourLabel=hours<0.1?(Math.round(totalSeconds/60)+" min"):(hours.toFixed(1).replace(".",",")+" h");
-  const streak=getLearningDayStreak(data.secondsByDay);
-  const cards=$(".stat-grid .stat-card",main);
-  if(cards[0]){
-    const value=cards[0].querySelector("strong");
-    const bar=cards[0].querySelector(".stat-progress i");
-    if(value)value.textContent=percent+" %";
-    if(bar)bar.style.width=percent+"%";
-  }
-  if(cards[1]){
-    const value=cards[1].querySelector("strong");
-    const label=cards[1].querySelector("small");
-    if(value)value.textContent=mastered+" / "+total;
-    if(label)label.textContent="Lernziele erreicht";
-  }
-  if(cards[2]){
-    const value=cards[2].querySelector("strong");
-    const label=cards[2].querySelector("small");
-    if(value)value.textContent=hourLabel;
-    if(label)label.textContent="Aktive Lernzeit";
-  }
-  if(cards[3]){
-    const value=cards[3].querySelector("strong");
-    const label=cards[3].querySelector("small");
-    if(value)value.textContent=streak+" Tage";
-    if(label)label.textContent="Lernserie (aufeinanderfolgend)";
-  }
-}
-let learningTimeCheckpoint=Date.now();
-function flushLearningTime(){
-  const now=Date.now();
-  const elapsed=Math.max(0,Math.min(30000,now-learningTimeCheckpoint));
-  learningTimeCheckpoint=now;
-  if(document.visibilityState!=="visible"||elapsed<1000)return;
-  const data=readLearningStats();
-  const key=localDayKey(new Date(now));
-  data.secondsByDay[key]=(Number(data.secondsByDay[key])||0)+Math.round(elapsed/1000);
-  writeLearningStats(data);
-  updateDashboardStats();
-}
-setInterval(flushLearningTime,10000);
-document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="hidden")flushLearningTime();
-  else learningTimeCheckpoint=Date.now();
-});
-window.addEventListener("pagehide",flushLearningTime);
-window.addEventListener("focus",()=>{learningTimeCheckpoint=Date.now();});
-window.addEventListener("blur",flushLearningTime);
-
 function setTheme(theme){
   document.documentElement.dataset.theme=theme;
   document.documentElement.style.colorScheme=theme;
@@ -322,7 +227,6 @@ $("#today-date").textContent = date.format(new Date());
 
 bindActions();
 refreshIcons();
-updateDashboardStats();
 
 const flashTopics=[
 {id:"basics",name:"Elektrotechnische Grundlagen",desc:"Spannung, Strom, Widerstand und Leistung",cards:[["Was ist elektrische Spannung?","Die Potentialdifferenz zwischen zwei Punkten. Einheit: Volt (V)."],["Was beschreibt die Stromstärke?","Die elektrische Ladungsmenge, die pro Zeit durch einen Leiterquerschnitt fließt. Einheit: Ampere (A)."],["Wie lautet das Ohmsche Gesetz?","U = R · I. Umgestellt: I = U/R und R = U/I."],["Wie berechnet man elektrische Leistung?","P = U · I. Einheit: Watt (W)."],["Wie berechnet man elektrische Arbeit?","W = P · t. Bei kW und Stunden ergibt sich kWh."]]},
@@ -360,7 +264,7 @@ function renderFlashCard(){
  $("#flash-known").addEventListener("click",()=>markFlashCard(true));$("#flash-wrong").addEventListener("click",()=>markFlashCard(false));
 }
 function flipFlashCard(){if(!flashRun)return;flashRun.flipped=!flashRun.flipped;renderFlashCard();}
-function markFlashCard(known){if(!flashRun||!flashRun.flipped)return;const s=flashRun;const card=s.deck[s.index];s[known?"known":"wrong"].push(card);if(known)recordMasteredGoal("card",card.id);s.index++;s.flipped=false;renderFlashCard();}
+function markFlashCard(known){if(!flashRun||!flashRun.flipped)return;const s=flashRun;s[known?"known":"wrong"].push(s.deck[s.index]);s.index++;s.flipped=false;renderFlashCard();}
 function renderFlashResult(){
  const s=flashRun,pct=Math.round(s.known.length/s.deck.length*100);
  $("#main-content").innerHTML='<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> LERNEINHEIT ABGESCHLOSSEN</div><h1>Gut gemacht!</h1><p>Du hast alle ausgewählten Karteikarten bearbeitet.</p></div></section><section class="flash-results panel"><div class="flash-result-icon"><i data-lucide="graduation-cap"></i></div><span class="section-kicker">DEIN ERGEBNIS</span><h2>'+pct+' % gewusst</h2><p>'+s.known.length+' von '+s.deck.length+' Karten als gewusst markiert.</p><div class="flash-result-bars"><div><span>Gewusst</span><b>'+s.known.length+'</b><i class="result-green"><em style="width:'+(s.known.length/s.deck.length*100)+'%"></em></i></div><div><span>Noch üben</span><b>'+s.wrong.length+'</b><i class="result-red"><em style="width:'+(s.wrong.length/s.deck.length*100)+'%"></em></i></div></div><div class="flash-result-actions">'+(s.wrong.length?'<button class="button button-primary" id="repeat-wrong">Alle falschen nochmal ('+s.wrong.length+')</button>':'')+'<button class="button '+(s.wrong.length?"button-secondary":"button-primary")+'" id="repeat-all">Alle nochmal</button><button class="button button-quiet" id="change-topics">Zurück zu allen Themen</button></div></section>';
@@ -527,7 +431,7 @@ function renderSimexPartASession() {
       renderSimexPartASession();
     })
   );
-  $("#simex-a-correct").addEventListener("click", () => { if (simexPartAActive.answers[task.id] === undefined || simexPartAActive.correctedTasks[task.id]) return; simexPartAActive.correctedTasks[task.id] = true; if(simexPartAActive.answers[task.id]===task.correct)recordMasteredGoal("exam",task.id); renderSimexPartASession(); });
+  $("#simex-a-correct").addEventListener("click", () => { if (simexPartAActive.answers[task.id] === undefined || simexPartAActive.correctedTasks[task.id]) return; simexPartAActive.correctedTasks[task.id] = true; renderSimexPartASession(); });
   $$("[data-simex-a-nav]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
     simexPartAActive.index = Number(button.dataset.simexANav);
     renderSimexPartASession();
