@@ -383,7 +383,7 @@ function renderSimexPartAQuestion(task, index) {
     '" data-simex-a-nav="' + i + '" aria-label="Aufgabe ' + (i+1) + '">' + (i+1) + '</button>'
   ).join("");
   const progressBar =
-    '<div class="simex-a-header-progress" role="progressbar" aria-label="Beantwortete Aufgaben" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + progress + '">' +
+    '<div class="simex-a-header-progress" role="progressbar" aria-label="Prüfungsfortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + progress + '">' +
       '<span style="width:' + progress + '%"></span>' +
     '</div>';
   return '<article class="simex-a-question"><header>' +
