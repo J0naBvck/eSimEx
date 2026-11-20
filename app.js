@@ -435,6 +435,11 @@ function renderSimexPartAQuestion(task, index) {
     return '<label class="simex-a-answer' + stateClass + '"><input type="radio" name="simex-answer-' + simexPartAEscape(task.id) + '" value="' + optionIndex + '" ' +
       (selected ? "checked" : "") + (isCorrected ? " disabled" : "") + '><span class="simex-a-answer-letter">' + String.fromCharCode(65 + optionIndex) + '</span><span class="simex-a-answer-text">' + simexPartAEscape(option) + '</span>' + status + '</label>';
   }).join("");
+  const solution = isCorrected
+    ? (task.unverified || !Number.isInteger(task.correct)
+      ? '<section class="simex-a-solution is-unverified"><strong>Hinweis zur Lösung</strong><p>' + simexPartAEscape(task.explanation || "Die richtige Antwort lässt sich aus den verfügbaren Angaben nicht sicher bestimmen.") + '</p><small>Diese Aufgabe wird nicht als richtig oder falsch gewertet.</small></section>'
+      : '<section class="simex-a-solution"><strong>Richtige Lösung: ' + String.fromCharCode(65 + task.correct) + ' – ' + simexPartAEscape(task.options[task.correct]) + '</strong><p>' + simexPartAEscape(task.explanation || "Die richtige Antwort ist markiert.") + '</p></section>')
+    : "";
   const scratch = task.givens ? '<div class="simex-a-givens"><div><span class="simex-a-stimulus-label">GEGEBEN</span>' +
     task.givens.map(pair => '<span><small>' + simexPartAEscape(pair[0]) + '</small><strong>' + simexPartAEscape(pair[1]) + '</strong></span>').join("") +
     '</div><label>Notizen / Rechenweg<textarea rows="3" placeholder="Hier kannst du deinen Rechenweg notieren …"></textarea></label></div>' : "";
@@ -454,7 +459,7 @@ function renderSimexPartAQuestion(task, index) {
     '<span class="simex-a-points">' + task.points + ' Pkt.</span>' +
     '</header>' +
     '<div class="simex-a-question-body"><div class="simex-a-format-label">' + simexPartAFormatName(task.format) + '</div><h2>' + simexPartAEscape(task.prompt) + '</h2>' +
-    renderSimexStimulus(task) + scratch + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>' + (task.unverified ? "Antwortoptionen aus der PDF-Ergänzung; Originalgrafik fehlt." : "Genau eine Antwort ist richtig.") + '</small></div><div class="simex-a-answer-list">' + options + '</div>' + (task.unverified ? '<p class="simex-a-review-intro">Hinweis: Diese Aufgabe ist vollständig als Text aufgenommen, aber wegen fehlender Grafik/Kennlinie nicht zuverlässig korrigierbar.</p>' : '') + '</div></article>';
+    renderSimexStimulus(task) + scratch + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>' + (task.unverified ? "Antwortoptionen aus der PDF-Ergänzung; Originalgrafik fehlt." : "Genau eine Antwort ist richtig.") + '</small></div><div class="simex-a-answer-list">' + options + '</div>' + solution + (task.unverified && !isCorrected ? '<p class="simex-a-review-intro">Hinweis: Diese Aufgabe ist vollständig als Text aufgenommen, aber wegen fehlender Grafik/Kennlinie nicht zuverlässig korrigierbar.</p>' : '') + '</div></article>';
 }
 
 function renderSimexPartASession() {
