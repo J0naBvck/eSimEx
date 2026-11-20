@@ -7,6 +7,17 @@
   <meta name="color-scheme" content="light dark">
   <meta name="description" content="eSimEX – die moderne Lernplattform für technische Ausbildungen.">
   <title>Dashboard | eSimEX</title>
+  <script>
+    (function () {
+      var theme = "light";
+      try {
+        var savedTheme = localStorage.getItem("azubi-academy-theme");
+        if (savedTheme === "light" || savedTheme === "dark") theme = savedTheme;
+      } catch (error) {}
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
   <link rel="stylesheet" href="styles.css?v=simex-answer-text-large-20261120-1">
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
   <script src="app.js?v=review-click-fix-20261120-2" defer></script>
