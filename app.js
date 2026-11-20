@@ -454,13 +454,31 @@ function renderSimexPartAResult() {
   const rows = tasks.map((task, index) => {
     const ok = answers[task.id] === task.correct;
     const result = answers[task.id] === undefined ? "Nicht beantwortet" : (ok ? "Richtig" : "Falsch");
-    return '<div><span class="simex-a-result-status ' + (ok ? "is-correct" : "is-wrong") + '">' + (ok ? "✓" : "×") + '</span><span><strong>Aufgabe ' + (index + 1) + '</strong><small>' + simexPartAEscape(task.topic) + '</small></span><b>' + result + '</b></div>';
+    const content = '<span class="simex-a-result-status ' + (ok ? "is-correct" : "is-wrong") + '">' + (ok ? "✓" : "×") + '</span><span><strong>Aufgabe ' + (index + 1) + '</strong><small>' + simexPartAEscape(task.topic) + '</small></span><b>' + result + '</b>';
+    return ok
+      ? '<div>' + content + '</div>'
+      : '<button type="button" class="simex-a-result-row" data-simex-review="' + index + '" aria-label="Falsche Aufgabe ' + (index + 1) + ' erneut ansehen">' + content + '<span class="simex-a-review-hint">Frage ansehen →</span></button>';
   }).join("");
+  const wrongCount = tasks.length - correct;
   $("#main-content").innerHTML =
     '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> TEIL A · SIMULATION ABGESCHLOSSEN</div><h1>Dein Ergebnis</h1><p>Die Prüfung ist abgeschlossen.</p></div></section>' +
     '<section class="simex-a-result panel"><div class="simex-a-result-score">' + percent + '<small>%</small></div><h2>' + correct + ' von ' + tasks.length + ' richtig</h2>' +
+    (wrongCount ? '<p class="simex-a-review-intro">Klicke auf eine falsche Aufgabe, um die Frage und die richtige Lösung noch einmal anzusehen.</p>' : '<p class="simex-a-review-intro">Sehr gut! Du hast alle Aufgaben richtig beantwortet.</p>') +
     '<div class="simex-a-result-list">' + rows + '</div>' +
     '<button class="button button-primary" id="simex-a-again"><i data-lucide="shuffle"></i> Neue Zufallsauswahl</button></section>';
   refreshIcons();
+  $("[data-simex-review]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
+    renderSimexPartAReview(Number(button.dataset.simexReview));
+  }));
   $("#simex-a-again").addEventListener("click", renderSimexPartASetup);
+}
+
+function renderSimexPartAReview(index) {
+  simexPartAActive.index = index;
+  const task = simexPartAActive.tasks[index];
+  $("#main-content").innerHTML =
+    '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> DEINE FEHLER · WIEDERHOLUNG</div><h1>Aufgabe ' + (index + 1) + ' noch einmal ansehen</h1><p>Deine Antwort und die richtige Lösung im Vergleich.</p></div><button class="button simex-a-exit" id="simex-a-back-result"><i data-lucide="arrow-left"></i> Zurück zum Ergebnis</button></section>' +
+    renderSimexPartAQuestion(task, index);
+  refreshIcons();
+  $("#simex-a-back-result").addEventListener("click", renderSimexPartAResult);
 }
