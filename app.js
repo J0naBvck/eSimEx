@@ -415,9 +415,9 @@ function renderSimexPartAQuestion(task, index) {
   const isCorrected = !!simexPartAActive.correctedTasks[task.id];
   const options = task.options.map((option, optionIndex) => {
     const selected = simexPartAActive.answers[task.id] === optionIndex;
-    const isRightAnswer = isCorrected && optionIndex === task.correct;
+    const isRightAnswer = isCorrected && !task.unverified && optionIndex === task.correct;
     const isSelectedRight = isRightAnswer && selected;
-    const isSelectedWrong = isCorrected && selected && optionIndex !== task.correct;
+    const isSelectedWrong = isCorrected && !task.unverified && selected && optionIndex !== task.correct;
     const isUnselectedSolution = isRightAnswer && !selected;
     const stateClass = isSelectedRight
       ? " is-correct is-selected-correct"
@@ -453,7 +453,7 @@ function renderSimexPartAQuestion(task, index) {
     '<span class="simex-a-points">' + task.points + ' Pkt.</span>' +
     '</header>' +
     '<div class="simex-a-question-body"><div class="simex-a-format-label">' + simexPartAFormatName(task.format) + '</div><h2>' + simexPartAEscape(task.prompt) + '</h2>' +
-    renderSimexStimulus(task) + scratch + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>Genau eine Antwort ist richtig.</small></div><div class="simex-a-answer-list">' + options + '</div></div></article>';
+    renderSimexStimulus(task) + scratch + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>' + (task.unverified ? "Antwortoptionen aus der PDF-Ergänzung; Originalgrafik fehlt." : "Genau eine Antwort ist richtig.") + '</small></div><div class="simex-a-answer-list">' + options + '</div>' + (task.unverified ? '<p class="simex-a-review-intro">Hinweis: Diese Aufgabe ist vollständig als Text aufgenommen, aber wegen fehlender Grafik/Kennlinie nicht zuverlässig korrigierbar.</p>' : '') + '</div></article>';
 }
 
 function renderSimexPartASession() {
@@ -495,17 +495,19 @@ function renderSimexPartASession() {
 function renderSimexPartAResult() {
   const tasks = simexPartAActive.tasks;
   const answers = simexPartAActive.answers;
-  const correct = tasks.filter(task => answers[task.id] === task.correct).length;
-  const percent = Math.round(correct / tasks.length * 100);
+  const gradableTasks = tasks.filter(task => !task.unverified);
+  const correct = gradableTasks.filter(task => answers[task.id] === task.correct).length;
+  const percent = gradableTasks.length ? Math.round(correct / gradableTasks.length * 100) : 0;
   const rows = tasks.map((task, index) => {
-    const ok = answers[task.id] === task.correct;
-    const result = answers[task.id] === undefined ? "Nicht beantwortet" : (ok ? "Richtig" : "Falsch");
+    const ok = !task.unverified && answers[task.id] === task.correct;
+    const result = task.unverified ? "Nicht auswertbar – Abbildung fehlt" : (answers[task.id] === undefined ? "Nicht beantwortet" : (ok ? "Richtig" : "Falsch"));
     const content = '<span class="simex-a-result-status ' + (ok ? "is-correct" : "is-wrong") + '">' + (ok ? "✓" : "×") + '</span><span><strong>Aufgabe ' + (index + 1) + '</strong><small>' + simexPartAEscape(task.topic) + '</small></span><b>' + result + '</b>';
     return ok
       ? '<div>' + content + '</div>'
       : '<button type="button" class="simex-a-result-row" data-simex-review="' + index + '" aria-label="Falsche Aufgabe ' + (index + 1) + ' erneut ansehen">' + content + '<span class="simex-a-review-hint">Frage ansehen →</span></button>';
   }).join("");
-  const wrongCount = tasks.length - correct;
+  const wrongCount = gradableTasks.length - correct;
+  const unverifiedCount = tasks.filter(task => task.unverified).length;
   $("#main-content").innerHTML =
     '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> TEIL A · SIMULATION ABGESCHLOSSEN</div><h1>Dein Ergebnis</h1><p>Die Prüfung ist abgeschlossen.</p></div></section>' +
     '<section class="simex-a-result panel"><div class="simex-a-result-score">' + percent + '<small>%</small></div><h2>' + correct + ' von ' + tasks.length + ' richtig</h2>' +
