@@ -383,7 +383,7 @@ function renderSimexPartASession() {
   const answered = Object.keys(simexPartAActive.answers).length;
   const nav = simexPartAActive.tasks.map((t, i) => '<button class="simex-a-nav-dot ' + (i === simexPartAActive.index ? "current" : "") + (simexPartAActive.answers[t.id] !== undefined ? " answered" : "") + '" data-simex-a-nav="' + i + '" aria-label="Aufgabe ' + (i+1) + '">' + (i+1) + '</button>').join("");
   $("#main-content").innerHTML =
-    '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSSIMULATION · TEIL A</div><h1>Gebundene Aufgaben</h1><p>Demo-Durchlauf · ' + total + ' zufällig ausgewählte Aufgaben</p></div><button class="button simex-a-exit" id="simex-a-exit"><i data-lucide="x"></i> Beenden</button></section>' +
+    '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSSIMULATION · TEIL A</div><h1>Gebundene Aufgaben</h1><p>AP1-Fragenpool · ' + total + ' zufällig ausgewählte Aufgaben</p></div><button class="button simex-a-exit" id="simex-a-exit"><i data-lucide="x"></i> Beenden</button></section>' +
     '<section class="simex-a-session-meta"><div><strong>' + (simexPartAActive.index + 1) + ' <span>/ ' + total + '</span></strong><small>Aufgabe</small></div><div><strong>' + answered + ' <span>/ ' + total + '</span></strong><small>Beantwortet</small></div><div class="simex-a-progress"><span style="width:' + (answered / total * 100) + '%"></span></div></section>' +
     '<nav class="simex-a-question-nav" aria-label="Aufgabennavigation">' + nav + '</nav>' +
     renderSimexPartAQuestion(task, simexPartAActive.index) +
@@ -424,8 +424,8 @@ function renderSimexPartAResult() {
   const correct = tasks.filter(task => answers[task.id] === task.correct).length;
   const percent = Math.round(correct / tasks.length * 100);
   $("#main-content").innerHTML =
-    '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> TEIL A · DEMO ABGESCHLOSSEN</div><h1>Dein Ergebnis</h1><p>Die Musterlösungen dieser Demo-Aufgaben wurden zur Auswertung verwendet.</p></div></section>' +
-    '<section class="simex-a-result panel"><div class="simex-a-result-score">' + percent + '<small>%</small></div><h2>' + correct + ' von ' + tasks.length + ' richtig</h2><p>Dies ist ausschließlich eine Layout-Demo mit eigens erstellten Platzhalteraufgaben, keine offizielle Prüfungsbewertung.</p>' +
+    '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> TEIL A · DEMO ABGESCHLOSSEN</div><h1>Dein Ergebnis</h1><p>Die Antworten wurden mit den Musterlösungen des Aufgabenpools verglichen.</p></div></section>' +
+    '<section class="simex-a-result panel"><div class="simex-a-result-score">' + percent + '<small>%</small></div><h2>' + correct + ' von ' + tasks.length + ' richtig</h2><p>Dein Ergebnis basiert auf den beantworteten Fragen dieses Übungsdurchlaufs.</p>' +
     '<div class="simex-a-result-list">' + tasks.map((task, i) => {
       const ok = answers[task.id] === task.correct;
       return '<div><span class="simex-a-result-status ' + (ok ? "is-correct" : "is-wrong") + '">' + (ok ? "✓" : "×") + '</span><span><strong>Aufgabe ' + (i+1) + '</strong><small>' + simexPartAEscape(task.topic) + '</small></span><b>' + (answers[task.id] === undefined ? "Nicht beantwortet" : (ok ? "Richtig" : "Nicht richtig")) + '</b></div>';
