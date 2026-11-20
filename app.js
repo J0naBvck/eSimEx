@@ -336,7 +336,7 @@ function renderSimexPartASetup() {
   $("#simex-a-start").addEventListener("click", () => {
     const selected = $('input[name="simex-a-count"]:checked', $("#main-content"));
     const amount = selected && selected.value === "all" ? simexPartAPool.length : Number(selected ? selected.value : 10);
-    simexPartAActive = {tasks:simexPartAShuffle(simexPartAPool).slice(0, amount),answers:{},index:0,correctedFor:null};
+    simexPartAActive = {tasks:simexPartAShuffle(simexPartAPool).slice(0, amount),answers:{},index:0,correctedTasks:{}};
     renderSimexPartASession();
   });
 }
@@ -369,7 +369,7 @@ function renderSimexPartAQuestion(task, index) {
   const total = simexPartAActive.tasks.length;
   const answered = Object.keys(simexPartAActive.answers).length;
   const progress = Math.round((answered / total) * 100);
-  const isCorrected = simexPartAActive.correctedFor === task.id;
+  const isCorrected = !!simexPartAActive.correctedTasks[task.id];
   const options = task.options.map((option, optionIndex) => {
     const selected = simexPartAActive.answers[task.id] === optionIndex;
     const isRightAnswer = isCorrected && optionIndex === task.correct;
@@ -389,7 +389,7 @@ function renderSimexPartAQuestion(task, index) {
           ? '<span class="simex-a-answer-status is-solution"><span>✓</span> Richtige Lösung</span>'
           : ""));
     return '<label class="simex-a-answer' + stateClass + '"><input type="radio" name="simex-answer-' + simexPartAEscape(task.id) + '" value="' + optionIndex + '" ' +
-      (selected ? "checked" : "") + '><span class="simex-a-answer-letter">' + String.fromCharCode(65 + optionIndex) + '</span><span class="simex-a-answer-text">' + simexPartAEscape(option) + '</span>' + status + '</label>';
+      (selected ? "checked" : "") + (isCorrected ? " disabled" : "") + '><span class="simex-a-answer-letter">' + String.fromCharCode(65 + optionIndex) + '</span><span class="simex-a-answer-text">' + simexPartAEscape(option) + '</span>' + status + '</label>';
   }).join("");
   const scratch = task.givens ? '<div class="simex-a-givens"><div><span class="simex-a-stimulus-label">GEGEBEN</span>' +
     task.givens.map(pair => '<span><small>' + simexPartAEscape(pair[0]) + '</small><strong>' + simexPartAEscape(pair[1]) + '</strong></span>').join("") +
@@ -417,7 +417,7 @@ function renderSimexPartASession() {
   if (!simexPartAActive) return renderSimexPartASetup();
   const task = simexPartAActive.tasks[simexPartAActive.index];
   const total = simexPartAActive.tasks.length;
-  const isCorrected = simexPartAActive.correctedFor === task.id;
+  const isCorrected = !!simexPartAActive.correctedTasks[task.id];
   $("#main-content").innerHTML =
     '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSSIMULATION · TEIL A</div><h1>Gebundene Aufgaben</h1><p>AP1-Fragenpool · ' + total + ' zufällig ausgewählte Aufgaben</p></div><button class="button simex-a-exit" id="simex-a-exit"><i data-lucide="x"></i> Beenden</button></section>' +
     renderSimexPartAQuestion(task, simexPartAActive.index) +
@@ -426,27 +426,24 @@ function renderSimexPartASession() {
   refreshIcons();
   $$('input[name="simex-answer-' + task.id + '"]', $("#main-content")).forEach(input =>
     input.addEventListener("change", () => {
+      if (simexPartAActive.correctedTasks[task.id]) return;
       simexPartAActive.answers[task.id] = Number(input.value);
-      simexPartAActive.correctedFor = null;
       renderSimexPartASession();
     })
   );
-  $("#simex-a-correct").addEventListener("click", () => { simexPartAActive.correctedFor = task.id; renderSimexPartASession(); });
+  $("#simex-a-correct").addEventListener("click", () => { if (simexPartAActive.answers[task.id] === undefined || simexPartAActive.correctedTasks[task.id]) return; simexPartAActive.correctedTasks[task.id] = true; renderSimexPartASession(); });
   $$("[data-simex-a-nav]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
     simexPartAActive.index = Number(button.dataset.simexANav);
-    simexPartAActive.correctedFor = null;
     renderSimexPartASession();
   }));
   $("#simex-a-prev").addEventListener("click", () => {
     simexPartAActive.index = Math.max(0, simexPartAActive.index - 1);
-    simexPartAActive.correctedFor = null;
     renderSimexPartASession();
   });
   $("#simex-a-next").addEventListener("click", () => {
     if (simexPartAActive.index < total - 1) {
       simexPartAActive.index++;
-      simexPartAActive.correctedFor = null;
-      renderSimexPartASession();
+        renderSimexPartASession();
     } else renderSimexPartAResult();
   });
   $("#simex-a-exit").addEventListener("click", renderSimexPartASetup);
