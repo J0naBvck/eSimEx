@@ -598,3 +598,134 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
 :root[data-theme="dark"] .nav-item,:root[data-theme="dark"] .brand,:root[data-theme="dark"] .top-profile,:root[data-theme="dark"] .button-secondary,:root[data-theme="dark"] .select-button{color:var(--ink)}
 :root[data-theme="dark"] input,:root[data-theme="dark"] textarea,:root[data-theme="dark"] select{background:var(--surface-secondary);color:var(--ink);border-color:var(--line)}
 .settings-panel{padding:24px}.settings-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.settings-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}.settings-copy{flex:1;min-width:200px}.settings-copy strong{font-size:16px}.settings-copy p{margin:4px 0 0;color:var(--muted)}.theme-picker{display:flex;gap:8px;flex-wrap:wrap}.theme-option{display:flex;align-items:center;gap:8px;padding:11px 15px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface-secondary);color:var(--ink);font:inherit;cursor:pointer;transition:.18s}.theme-option:hover{border-color:var(--accent)}.theme-option.selected{background:var(--accent-soft);border-color:var(--accent);font-weight:600}.theme-option svg{width:17px;height:17px}
+
+
+/* Karteikarten: ruhigere, klar gegliederte Themenauswahl und Lernansicht */
+.flash-setup{
+  max-width:980px;
+  margin:0 auto;
+  padding:30px;
+  border:1px solid var(--line-strong);
+  border-radius:20px;
+}
+.flash-setup-head{
+  align-items:flex-start;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--line);
+}
+.flash-setup-head h2{font-size:22px;letter-spacing:-.02em}
+.flash-setup-head p{font-size:13px;line-height:1.5}
+.flash-topic-tools{align-items:center;gap:18px}
+.flash-topic-grid{
+  grid-template-columns:1fr;
+  gap:9px;
+  margin-top:18px;
+}
+.flash-topic{
+  min-height:76px;
+  padding:15px 18px;
+  gap:15px;
+  border-radius:13px;
+  background:var(--surface-secondary);
+  border-color:var(--line);
+  transition:border-color .18s ease,background .18s ease,transform .18s ease;
+}
+.flash-topic:hover{
+  border-color:rgba(255,208,0,.55);
+  background:rgba(255,208,0,.045);
+  transform:translateY(-1px);
+}
+.flash-topic input:focus-visible+.flash-check{outline:2px solid var(--accent);outline-offset:3px}
+.flash-check{width:23px;height:23px;border-radius:7px}
+.flash-topic-copy{gap:5px}
+.flash-topic-copy strong{font-size:14px;line-height:1.35}
+.flash-topic-copy small{font-size:11px;line-height:1.4}
+.flash-topic-count{
+  min-width:76px;
+  padding:7px 10px;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:9px;
+  color:var(--muted);
+  background:rgba(0,0,0,.10);
+  font-size:11px;
+  font-weight:650;
+}
+.flash-setup-footer{
+  margin-top:22px;
+  padding-top:20px;
+}
+#flash-count{
+  display:inline-flex;
+  align-items:center;
+  min-height:36px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface-secondary);
+  color:var(--ink);
+  font-size:12px;
+  font-weight:650;
+}
+.flash-setup-footer .button{min-height:46px;padding:0 22px}
+.flash-howto{
+  max-width:980px;
+  justify-content:flex-start;
+  gap:24px;
+  margin:16px auto 0;
+  padding:0 4px;
+  font-size:11px;
+}
+.flash-session{max-width:820px}
+.flash-session-top{
+  align-items:center;
+  margin-bottom:12px;
+  font-size:12px;
+}
+.flash-session-top>span{
+  padding:7px 11px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--surface-secondary);
+  color:var(--ink);
+}
+.flash-progress{height:7px}
+.flash-stage{min-height:360px;margin:24px 0 20px}
+.flashcard,.flashcard-inner{min-height:340px}
+.flash-face{
+  gap:24px;
+  padding:44px 56px;
+  border-color:var(--line-strong);
+  background:linear-gradient(145deg,#292929,#1d1d1d);
+  box-shadow:0 14px 36px rgba(0,0,0,.20);
+}
+.flash-back{
+  background:linear-gradient(145deg,#303027,#22221d);
+  border-color:rgba(255,208,0,.24);
+}
+.flash-face small{font-size:11px}
+.flash-face strong{line-height:1.5}
+.flash-face span{font-size:11px}
+.flash-actions{gap:14px}
+.flash-rate,.flash-flip{min-height:58px;border-radius:13px}
+.flash-flip{padding:0 22px;font-size:11px}
+.flash-rate b{font-size:13px}
+.flash-rate small{font-size:10px}
+.flash-stats{
+  margin-top:22px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+  font-size:11px;
+}
+@media(max-width:760px){
+  .flash-setup{padding:18px}
+  .flash-topic{min-height:70px;padding:12px}
+  .flash-topic-copy strong{font-size:12px}
+  .flash-topic-count{min-width:auto;padding:6px 8px;font-size:9px}
+  .flash-setup-footer{gap:12px}
+  .flash-howto{padding:0 4px}
+  .flash-stage{min-height:290px}
+  .flashcard,.flashcard-inner{min-height:280px}
+  .flash-face{padding:26px 22px}
+  .flash-stats{padding-top:13px}
+}
