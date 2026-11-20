@@ -2081,12 +2081,12 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
   font-size: 11px;
   line-height: 1.45;
 }
-.simex-a-answer .simex-a-answer-status {
+.simex-a-answer>span.simex-a-answer-status {
   font-size: 9px;
   line-height: 1;
 }
 @media (max-width: 520px) {
-  .simex-a-answer .simex-a-answer-status {
+  .simex-a-answer>span.simex-a-answer-status {
     font-size: 8px;
   }
 }
