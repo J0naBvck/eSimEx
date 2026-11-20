@@ -2292,3 +2292,13 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
     font-size: 9px;
   }
 }
+
+/* Add breathing room between the question selector and progress track */
+.simex-a-header-progress{
+  margin-left:10px;
+}
+@media(max-width:760px){
+  .simex-a-header-progress{
+    margin-left:0;
+  }
+}
