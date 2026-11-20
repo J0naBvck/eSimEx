@@ -1052,3 +1052,141 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
  .simex-a-header-counts strong{font-size:13px}
  .simex-a-points{margin-left:auto}
 }
+
+
+/* Final exam header order: task identity → question selector → progress bar → points */
+.simex-a-question>header{
+ display:grid;
+ grid-template-columns:minmax(240px,1fr) auto minmax(100px,.55fr) auto;
+ align-items:center;
+ gap:16px;
+ padding:13px 18px;
+}
+.simex-a-question-ident{
+ display:flex;
+ min-width:0;
+ align-items:center;
+ gap:11px;
+ flex-wrap:wrap;
+}
+.simex-a-question-number{
+ flex:none;
+ color:var(--ink);
+ font-size:10px;
+ font-weight:850;
+ letter-spacing:.1em;
+ white-space:nowrap;
+}
+.simex-a-topic{
+ flex:none;
+ padding-left:11px;
+ border-left:1px solid var(--line-strong);
+ color:var(--ink);
+ font-size:12px;
+ font-weight:550;
+}
+.simex-a-source{
+ min-width:0;
+ color:var(--muted);
+ font-size:10px;
+ line-height:1.35;
+}
+.simex-a-header-nav{
+ display:flex;
+ max-width:min(38vw,440px);
+ min-width:0;
+ align-items:center;
+ justify-content:flex-start;
+ gap:5px;
+ overflow-x:auto;
+ padding:2px 1px 4px;
+ scrollbar-width:thin;
+}
+.simex-a-header-nav .simex-a-nav-dot{
+ display:grid;
+ flex:0 0 30px;
+ width:30px;
+ height:30px;
+ place-items:center;
+ border:1px solid var(--line);
+ border-radius:9px;
+ background:var(--surface);
+ color:var(--muted);
+ font:650 10px var(--font);
+ cursor:pointer;
+}
+.simex-a-header-nav .simex-a-nav-dot.current{
+ border-color:#d4a900;
+ background:rgba(255,208,0,.12);
+ color:var(--ink);
+}
+.simex-a-header-nav .simex-a-nav-dot.answered{
+ box-shadow:inset 0 -3px 0 #d8ad00;
+}
+.simex-a-header-progress{
+ width:100%;
+ min-width:70px;
+ height:7px;
+ overflow:hidden;
+ border-radius:20px;
+ background:var(--surface-secondary);
+}
+.simex-a-header-progress span{
+ display:block;
+ width:0;
+ height:100%;
+ border-radius:inherit;
+ background:#d8ad00;
+ transition:width .2s ease;
+}
+.simex-a-points{
+ justify-self:end;
+ white-space:nowrap;
+ padding:6px 9px;
+ border:1px solid var(--line);
+ border-radius:8px;
+ font-size:10px;
+ font-weight:750;
+}
+@media(max-width:1100px){
+ .simex-a-question>header{
+  grid-template-columns:minmax(160px,1fr) minmax(150px,.8fr) minmax(70px,.5fr) auto;
+  gap:10px;
+  padding:12px 14px;
+ }
+ .simex-a-question-ident{gap:7px}
+ .simex-a-header-nav{max-width:34vw;gap:4px}
+ .simex-a-header-nav .simex-a-nav-dot{flex-basis:27px;width:27px;height:28px}
+ .simex-a-topic{font-size:10px;padding-left:7px}
+ .simex-a-source{font-size:9px}
+}
+@media(max-width:760px){
+ .simex-a-question>header{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:12px 14px;
+ }
+ .simex-a-question-ident{
+  flex:1 1 calc(100% - 70px);
+  gap:7px;
+ }
+ .simex-a-source{flex-basis:100%}
+ .simex-a-header-nav{
+  order:3;
+  flex:1 1 auto;
+  max-width:100%;
+  gap:4px;
+ }
+ .simex-a-header-nav .simex-a-nav-dot{flex-basis:28px;width:28px;height:28px}
+ .simex-a-header-progress{
+  order:4;
+  flex:1 1 75px;
+  width:auto;
+ }
+ .simex-a-points{
+  order:5;
+  margin-left:auto;
+ }
+}
