@@ -75,7 +75,17 @@ const viewIcons = {
   settings: "settings-2"
 };
 
-const dashboardMarkup = $("#main-content").innerHTML;
+
+function setTheme(theme){
+  document.documentElement.dataset.theme=theme;
+  document.documentElement.style.colorScheme=theme;
+  try{localStorage.setItem("azubi-academy-theme",theme);}catch(e){}
+}
+(function initTheme(){
+  let saved="light";try{saved=localStorage.getItem("azubi-academy-theme")||"light";}catch(e){}
+  setTheme(saved);
+})();
+\nconst dashboardMarkup = $("#main-content").innerHTML;
 let lastModalTrigger = null;
 
 function switchView(view) {
@@ -109,6 +119,13 @@ function switchView(view) {
     refreshIcons(); bindActions(); return;
   }
   if (view === "cards") { renderCardSetup(); return; }
+  if (view === "settings") {
+    const currentTheme = document.documentElement.dataset.theme || "light";
+    $("#main-content").innerHTML = '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PERSONALISIERUNG</div><h1>Einstellungen</h1><p>Gestalte AZUBI.ACADEMY nach deinen Vorlieben.</p></div></section><section class="panel settings-panel"><div class="settings-row"><span class="settings-icon"><i data-lucide="sun"></i></span><div class="settings-copy"><strong>Darstellung</strong><p>Wähle zwischen hellem und dunklem Design.</p></div><div class="theme-picker"><button class="theme-option '+(currentTheme==="light"?"selected":"")+'" data-theme-choice="light"><i data-lucide="sun"></i> White Mode</button><button class="theme-option '+(currentTheme==="dark"?"selected":"")+'" data-theme-choice="dark"><i data-lucide="moon"></i> Dark Mode</button></div></div></section>';
+    refreshIcons();
+    $("[data-theme-choice]").forEach(btn=>btn.addEventListener("click",()=>{setTheme(btn.dataset.themeChoice);switchView("settings");}));
+    bindActions(); return;
+  }
 
   const title = info[0];
   const description = "Dieser Bereich ist als Vorschau angelegt. Die eigentliche Funktion kann im nächsten Entwicklungsschritt ergänzt werden.";
