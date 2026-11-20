@@ -1211,3 +1211,14 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
  border-color:#dc5b55;
  color:#dc5b55;
 }
+
+
+/* Keep answer status colors above the generic selected-radio styling */
+.simex-a-answer.is-correct:has(input:checked){
+ border:2px solid #22a06b;
+ background:var(--surface);
+}
+.simex-a-answer.is-wrong:has(input:checked){
+ border:2px solid #dc5b55;
+ background:var(--surface);
+}
