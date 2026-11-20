@@ -729,3 +729,45 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
   .flash-face{padding:26px 22px}
   .flash-stats{padding-top:13px}
 }
+
+
+/* Karteikarten-Bibliothek: Themen als direkt anklickbare Lernbereiche */
+.flash-library{max-width:1040px;margin:0 auto}
+.flash-library-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 18px}
+.flash-library-head h2{margin:6px 0;font-size:22px;letter-spacing:-.02em}
+.flash-library-head p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.flash-library-total{flex:none;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-secondary);color:var(--muted);font-size:11px;font-weight:650}
+.flash-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.flash-category-card{
+ display:flex;min-width:0;min-height:100px;align-items:center;gap:15px;padding:17px;
+ border:1px solid var(--line);border-radius:15px;background:var(--surface);
+ color:var(--ink);text-align:left;cursor:pointer;
+ transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.flash-category-card:hover{transform:translateY(-2px);border-color:rgba(255,208,0,.48);background:var(--surface-secondary);box-shadow:0 8px 22px rgba(0,0,0,.13)}
+.flash-category-card:focus-visible,.flash-all-cards:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.flash-category-icon,.flash-all-icon{display:grid;flex:none;width:46px;height:46px;place-items:center;border-radius:13px;background:var(--accent-soft);color:var(--accent)}
+.flash-category-icon svg,.flash-all-icon svg{width:22px;height:22px}
+.flash-category-copy{display:flex;min-width:0;flex:1;flex-direction:column;gap:5px}
+.flash-category-copy strong{font-size:13px;line-height:1.35}
+.flash-category-copy small{color:var(--muted);font-size:10px;line-height:1.45}
+.flash-category-meta{display:flex;flex:none;align-items:center;gap:7px;color:var(--muted);font-size:10px;font-weight:650}
+.flash-category-meta svg{width:14px;height:14px;color:var(--accent)}
+.flash-all-cards{
+ display:flex;width:100%;min-height:84px;align-items:center;gap:15px;margin-top:14px;padding:16px 18px;
+ border:1px solid rgba(255,208,0,.34);border-radius:15px;background:linear-gradient(110deg,rgba(255,208,0,.10),rgba(255,208,0,.035));
+ color:var(--ink);text-align:left;cursor:pointer;transition:background .18s ease,border-color .18s ease;
+}
+.flash-all-cards:hover{border-color:var(--accent);background:rgba(255,208,0,.13)}
+.flash-all-cards>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:5px}
+.flash-all-cards strong{font-size:14px}
+.flash-all-cards small{color:var(--muted);font-size:11px}
+.flash-all-cards>svg{width:19px;height:19px;color:var(--accent)}
+@media(max-width:760px){
+ .flash-library-head{align-items:flex-start;flex-direction:column}
+ .flash-category-grid{grid-template-columns:1fr;gap:9px}
+ .flash-category-card{min-height:82px;padding:13px}
+ .flash-category-icon{width:40px;height:40px}
+ .flash-category-copy strong{font-size:12px}
+ .flash-category-meta{font-size:9px}
+}
