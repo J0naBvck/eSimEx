@@ -2,7 +2,45 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 function refreshIcons() {
-  if (window.lucide) window.lucide.createIcons();
+  if (window.lucide) { window.lucide.createIcons(); return; }
+  /* Inline fallback keeps the interface icons visible if the Lucide CDN is unavailable. */
+  const paths = {
+    target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+    layers:'<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/>',
+    'clock-3':'<circle cx="12" cy="12" r="9"/><path d="M12 7v5h4"/>',
+    flame:'<path d="M8 14c-2-2-2-5 1-8 1 3 3 3 3 3 1-3 3-5 3-5 4 5 5 8 3 12a7 7 0 0 1-14 0c0-2 1-4 3-6z"/>',
+    factory:'<path d="M3 21V9l6 3V7l6 5V4h3v17H3z"/><path d="M7 17h2m4 0h2"/>',
+    'chevrons-up-down':'<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>',
+    zap:'<path d="m13 2-3 9h7l-8 11 3-9H5l8-11z"/>',
+    workflow:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><path d="M10 6h4a2 2 0 0 1 2 2v6"/>',
+    'arrow-up-right':'<path d="M7 17 17 7M7 7h10v10"/>',
+    'layout-dashboard':'<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/>',
+    'book-open':'<path d="M3 5a2 2 0 0 1 2-2h5a4 4 0 0 1 4 4v14a4 4 0 0 0-4-4H5a2 2 0 0 0-2 2z"/><path d="M21 5a2 2 0 0 0-2-2h-5"/><path d="M14 7v14a4 4 0 0 1 4-4h3V5"/>',
+    'clipboard-check':'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2m-7 8 2 2 4-4"/>',
+    calculator:'<rect x="4" y="3" width="16" height="18" rx="2"/><rect x="7" y="6" width="10" height="4"/><path d="M8 14h1m3 0h1m3 0h1m-9 3h1m3 0h1m3 0h1"/>',
+    'arrow-right':'<path d="M5 12h14m-7-7 7 7-7 7"/>',
+    bookmark:'<path d="M6 3h12v18l-6-4-6 4z"/>',
+    sparkles:'<path d="m12 3 1.5 6L20 11l-6.5 2L12 19l-1.5-6L4 11l6.5-2z"/><path d="m19 3 1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>',
+    'settings-2':'<path d="M4 7h10m4 0h2M4 17h2m4 0h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+    'chart-no-axes-combined':'<path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 5-7"/>',
+    'circle-help':'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1.5 1-1.5 2-1.5 3m0 3h.01"/>',
+    'calendar-days':'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 9h18m-14 4h2m4 0h2m-8 4h2m4 0h2"/>',
+    bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12a2 2 0 0 0 4 0"/>',
+    'chevron-down':'<path d="m6 9 6 6 6-6"/>',
+    'chevron-right':'<path d="m9 6 6 6-6 6"/>',
+    'more-horizontal':'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    'play':'<path d="m8 5 12 7-12 7z"/>',
+    'trending-up':'<path d="m3 17 6-6 4 4 8-8m-6 0h6v6"/>',
+    'mouse-pointer-click':'<path d="m3 3 7 18 3-7 7-3L3 3z"/>',
+    'move-horizontal':'<path d="M3 12h18m-6-6 6 6-6 6M9 6l-6 6 6 6"/>',
+    'x':'<path d="m18 6-12 12M6 6l12 12"/>',
+    'graduation-cap':'<path d="m2 10 10-5 10 5-10 5-10-5z"/><path d="M6 12v5c4 3 8 3 12 0v-5m4-2v6"/>',
+    'check':'<path d="m5 12 4 4L19 6"/>'
+  };
+  document.querySelectorAll('i[data-lucide]').forEach(el=>{
+    const name=el.getAttribute('data-lucide');
+    if(paths[name]){el.innerHTML=paths[name];el.outerHTML='<svg class="'+(el.className||'')+'" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+paths[name]+'</svg>';}
+  });
 }
 
 let toastTimer;
