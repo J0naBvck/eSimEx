@@ -85,7 +85,7 @@ function setTheme(theme){
   let saved="light";try{saved=localStorage.getItem("azubi-academy-theme")||"light";}catch(e){}
   setTheme(saved);
 })();
-\nconst dashboardMarkup = $("#main-content").innerHTML;
+const dashboardMarkup = $("#main-content").innerHTML;
 let lastModalTrigger = null;
 
 function switchView(view) {
