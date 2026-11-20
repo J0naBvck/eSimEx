@@ -84,7 +84,7 @@ function updateDashboardStats(){const cards=$(".stat-card",$("#main-content"));i
 function resetLearningStats(){learningStats={seconds:0,correct:0,questions:0,exams:0,lastDay:"",streak:0};saveLearningStats();showToast("Dein Lernfortschritt wurde zurückgesetzt.");switchView("dashboard");}
 function recordCompletedExam(){if(!simexPartAActive||simexPartAActive.resultRecorded)return;const tasks=simexPartAActive.tasks;learningStats.correct+=tasks.filter(t=>simexPartAActive.answers[t.id]===t.correct).length;learningStats.questions+=tasks.length;learningStats.exams++;const today=new Date().toISOString().slice(0,10);if(learningStats.lastDay!==today){const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);learningStats.streak=learningStats.lastDay===yesterday?learningStats.streak+1:1;learningStats.lastDay=today;}simexPartAActive.resultRecorded=true;saveLearningStats();}
 let activeTimeStamp=Date.now();
-function accountActiveTime(){const now=Date.now();if(!document.hidden&&activeTimeStamp){const elapsed=Math.min(60,Math.max(0,Math.floor((now-activeTimeStamp)/1000)));if(elapsed){learningStats.seconds+=elapsed;saveLearningStats();}}activeTimeStamp=now;}
+function accountActiveTime(){const now=Date.now();if(!document.hidden&&activeTimeStamp){const elapsed=Math.min(60,Math.max(0,Math.floor((now-activeTimeStamp)/1000)));if(elapsed){learningStats.seconds+=elapsed;saveLearningStats();if($('.sidebar .nav-item[data-view="dashboard"].active'))updateDashboardStats();}}activeTimeStamp=now;}
 setInterval(accountActiveTime,10000);document.addEventListener("visibilitychange",accountActiveTime);window.addEventListener("pagehide",accountActiveTime);
 
 function setTheme(theme){
@@ -238,6 +238,7 @@ $("#today-date").textContent = date.format(new Date());
 
 bindActions();
 refreshIcons();
+updateDashboardStats();
 
 const flashTopics=[
 {id:"basics",name:"Elektrotechnische Grundlagen",desc:"Spannung, Strom, Widerstand und Leistung",cards:[["Was ist elektrische Spannung?","Die Potentialdifferenz zwischen zwei Punkten. Einheit: Volt (V)."],["Was beschreibt die Stromstärke?","Die elektrische Ladungsmenge, die pro Zeit durch einen Leiterquerschnitt fließt. Einheit: Ampere (A)."],["Wie lautet das Ohmsche Gesetz?","U = R · I. Umgestellt: I = U/R und R = U/I."],["Wie berechnet man elektrische Leistung?","P = U · I. Einheit: Watt (W)."],["Wie berechnet man elektrische Arbeit?","W = P · t. Bei kW und Stunden ergibt sich kWh."]]},
