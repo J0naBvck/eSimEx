@@ -76,16 +76,7 @@ const viewIcons = {
 };
 
 
-const LEARNING_STATS_KEY="esimex-learning-stats-v2";
-let learningStats=(()=>{try{return JSON.parse(localStorage.getItem(LEARNING_STATS_KEY))||{seconds:0,correct:0,questions:0,exams:0,lastDay:"",streak:0};}catch(e){return {seconds:0,correct:0,questions:0,exams:0,lastDay:"",streak:0};}})();
-function saveLearningStats(){try{localStorage.setItem(LEARNING_STATS_KEY,JSON.stringify(learningStats));}catch(e){}}
-function formatLearningTime(seconds){const mins=Math.floor(seconds/60),hours=Math.floor(mins/60),rest=mins%60;return hours?hours+" h "+rest+" min":mins+" min";}
-function updateDashboardStats(){const cards=$(".stat-card",$("#main-content"));if(cards.length<4)return;const pct=learningStats.questions?Math.round(learningStats.correct/learningStats.questions*100):0;cards[0].querySelector("strong").textContent=pct+" %";const bar=cards[0].querySelector(".stat-progress i");if(bar)bar.style.width=pct+"%";cards[1].querySelector("strong").textContent=learningStats.exams;cards[1].querySelector("small").textContent="Prüfungen abgeschlossen";cards[2].querySelector("strong").textContent=formatLearningTime(learningStats.seconds);cards[2].querySelector("small").textContent="Zeit aktiv in der App";cards[3].querySelector("strong").textContent=learningStats.streak+" Tage";cards[3].querySelector("small").textContent="Lernserie";const activity=$(".activity-summary strong",$("#main-content"));if(activity)activity.textContent=formatLearningTime(learningStats.seconds);}
-function resetLearningStats(){learningStats={seconds:0,correct:0,questions:0,exams:0,lastDay:"",streak:0};saveLearningStats();showToast("Dein Lernfortschritt wurde zurückgesetzt.");switchView("dashboard");}
-function recordCompletedExam(){if(!simexPartAActive||simexPartAActive.resultRecorded)return;const tasks=simexPartAActive.tasks;learningStats.correct+=tasks.filter(t=>simexPartAActive.answers[t.id]===t.correct).length;learningStats.questions+=tasks.length;learningStats.exams++;const today=new Date().toISOString().slice(0,10);if(learningStats.lastDay!==today){const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);learningStats.streak=learningStats.lastDay===yesterday?learningStats.streak+1:1;learningStats.lastDay=today;}simexPartAActive.resultRecorded=true;saveLearningStats();}
-let activeTimeStamp=Date.now();
-function accountActiveTime(){const now=Date.now();if(!document.hidden&&activeTimeStamp){const elapsed=Math.min(60,Math.max(0,Math.floor((now-activeTimeStamp)/1000)));if(elapsed){learningStats.seconds+=elapsed;saveLearningStats();if($('.sidebar .nav-item[data-view="dashboard"].active'))updateDashboardStats();}}activeTimeStamp=now;}
-setInterval(accountActiveTime,10000);document.addEventListener("visibilitychange",accountActiveTime);window.addEventListener("pagehide",accountActiveTime);
+
 
 function setTheme(theme){
   document.documentElement.dataset.theme=theme;
@@ -114,7 +105,6 @@ function switchView(view) {
   if (view === "dashboard") {
     $("#main-content").innerHTML = dashboardMarkup;
     refreshIcons();
-    updateDashboardStats();
     bindActions();
     return;
   }
@@ -135,9 +125,8 @@ function switchView(view) {
   if (view === "cards") { renderCardSetup(); return; }
   if (view === "settings") {
     const currentTheme = document.documentElement.dataset.theme || "light";
-    $("#main-content").innerHTML = '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PERSONALISIERUNG</div><h1>Einstellungen</h1><p>Gestalte AZUBI.ACADEMY nach deinen Vorlieben.</p></div></section><section class="panel settings-panel"><div class="settings-row"><span class="settings-icon"><i data-lucide="sun"></i></span><div class="settings-copy"><strong>Darstellung</strong><p>Wähle zwischen hellem und dunklem Design.</p></div><div class="theme-picker"><button class="theme-option '+(currentTheme==="light"?"selected":"")+'" data-theme-choice="light"><i data-lucide="sun"></i> White Mode</button><button class="theme-option '+(currentTheme==="dark"?"selected":"")+'" data-theme-choice="dark"><i data-lucide="moon"></i> Dark Mode</button></div></div></section><section class="panel settings-panel"><div class="settings-row"><span class="settings-icon"><i data-lucide="rotate-ccw"></i></span><div class="settings-copy"><strong>Lernfortschritt zurücksetzen</strong><p>Setzt Prüfungs-Ergebnisse, Gesamtfortschritt und erfasste Lernzeit auf null.</p></div><button class="button button-secondary" id="reset-learning-stats">Daten zurücksetzen</button></div></section>';
+    $("#main-content").innerHTML = '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PERSONALISIERUNG</div><h1>Einstellungen</h1><p>Gestalte AZUBI.ACADEMY nach deinen Vorlieben.</p></div></section><section class="panel settings-panel"><div class="settings-row"><span class="settings-icon"><i data-lucide="sun"></i></span><div class="settings-copy"><strong>Darstellung</strong><p>Wähle zwischen hellem und dunklem Design.</p></div><div class="theme-picker"><button class="theme-option '+(currentTheme==="light"?"selected":"")+'" data-theme-choice="light"><i data-lucide="sun"></i> White Mode</button><button class="theme-option '+(currentTheme==="dark"?"selected":"")+'" data-theme-choice="dark"><i data-lucide="moon"></i> Dark Mode</button></div></div></section>';
     refreshIcons();
-    $("#reset-learning-stats").addEventListener("click",()=>{if(window.confirm("Möchtest du wirklich alle gespeicherten Lernstatistiken zurücksetzen?"))resetLearningStats();});
     $("[data-theme-choice]").forEach(btn=>btn.addEventListener("click",()=>{setTheme(btn.dataset.themeChoice);switchView("settings");}));
     bindActions(); return;
   }
@@ -238,7 +227,6 @@ $("#today-date").textContent = date.format(new Date());
 
 bindActions();
 refreshIcons();
-updateDashboardStats();
 
 const flashTopics=[
 {id:"basics",name:"Elektrotechnische Grundlagen",desc:"Spannung, Strom, Widerstand und Leistung",cards:[["Was ist elektrische Spannung?","Die Potentialdifferenz zwischen zwei Punkten. Einheit: Volt (V)."],["Was beschreibt die Stromstärke?","Die elektrische Ladungsmenge, die pro Zeit durch einen Leiterquerschnitt fließt. Einheit: Ampere (A)."],["Wie lautet das Ohmsche Gesetz?","U = R · I. Umgestellt: I = U/R und R = U/I."],["Wie berechnet man elektrische Leistung?","P = U · I. Einheit: Watt (W)."],["Wie berechnet man elektrische Arbeit?","W = P · t. Bei kW und Stunden ergibt sich kWh."]]},
@@ -449,7 +437,6 @@ function renderSimexPartASession() {
 }
 
 function renderSimexPartAResult() {
-  recordCompletedExam();
   const tasks = simexPartAActive.tasks;
   const answers = simexPartAActive.answers;
   const correct = tasks.filter(task => answers[task.id] === task.correct).length;
