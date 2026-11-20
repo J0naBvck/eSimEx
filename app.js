@@ -274,61 +274,31 @@ function repeatFlashCards(deck){flashRun={deck:deck.slice(),index:0,known:[],wro
 /* SimEx Part A: format-specific demo tasks. Replace this local array with API/database records later. */
 let simexPartAActive = null;
 const simexPartAPool = [
-  {
-    id:"PA-DEMO-01", part:"A", format:"single_choice", topic:"Elektrotechnische Grundlagen", points:1,
-    prompt:"Welche physikalische Größe wird in Watt (W) angegeben?",
-    options:["Elektrische Leistung","Elektrische Spannung","Elektrischer Widerstand","Elektrische Ladung","Elektrische Energie"],
-    correct:0, explanation:"Die elektrische Leistung wird in Watt (W) angegeben."
-  },
-  {
-    id:"PA-DEMO-02", part:"A", format:"calculation", topic:"Technische Mathematik", points:1,
-    prompt:"Ein ohmscher Verbraucher wird mit 24 V betrieben. Sein Widerstand beträgt 8 Ω. Welche Stromstärke fließt?",
-    givens:[["Spannung U","24 V"],["Widerstand R","8 Ω"]],
-    options:["2 A","3 A","4 A","8 A","12 A"], correct:1,
-    explanation:"Nach I = U / R ergibt sich I = 24 V / 8 Ω = 3 A."
-  },
-  {
-    id:"PA-DEMO-03", part:"A", format:"datasheet", topic:"Elektrische Betriebsmittel", points:1,
-    prompt:"Das folgende Typenschild gehört zu einem Drehstrommotor. Welche Bemessungsspannung gilt bei einer Sternschaltung?",
-    stimulus:{kind:"datasheet",rows:[["Motorart","3~ Motor"],["Schaltung","Δ / Y"],["Bemessungsspannung","230 / 400 V"],["Bemessungsstrom","4,2 / 2,4 A"],["Frequenz","50 Hz"],["Leistung","1,1 kW"]]},
-    options:["230 V","400 V","690 V","24 V","Nicht aus dem Typenschild bestimmbar"], correct:1,
-    explanation:"Bei der Kennzeichnung Δ / Y 230 / 400 V beträgt die Bemessungsspannung in Sternschaltung 400 V."
-  },
-  {
-    id:"PA-DEMO-04", part:"A", format:"graph", topic:"Wechselstromtechnik", points:1,
-    prompt:"Der dargestellte Spannungsverlauf wiederholt sich nach 20 ms. Welche Frequenz hat das Signal?",
-    stimulus:{kind:"sine",label:"Schematischer Spannungsverlauf",period:"T = 20 ms"},
-    options:["5 Hz","20 Hz","50 Hz","60 Hz","100 Hz"], correct:2,
-    explanation:"f = 1 / T = 1 / 0,02 s = 50 Hz."
-  },
-  {
-    id:"PA-DEMO-05", part:"A", format:"circuit", topic:"Steuerungstechnik", points:1,
-    prompt:"Im vereinfachten Steuerstromkreis ist ein Hilfsschließer parallel zum Starttaster eingezeichnet. Welche Funktion hat dieser Kontakt?",
-    stimulus:{kind:"circuit"},
-    options:["Er bewirkt die Selbsthaltung des Schützes.","Er schützt den Motor vor Überlast.","Er misst den Spulenstrom.","Er unterbricht den Schutzleiter.","Er verändert die Drehrichtung des Motors."],
-    correct:0, explanation:"Der Hilfsschließer überbrückt nach dem Anziehen des Schützes den Starttaster und hält dadurch die Spule angezogen."
-  },
-  {
-    id:"PA-DEMO-06", part:"A", format:"table", topic:"Messen und Prüfen", points:1,
-    prompt:"Ein Messprotokoll enthält die folgenden Messwerte. Welcher Messwert liegt am nächsten bei 12 V?",
-    stimulus:{kind:"measurement",rows:[["Messpunkt","Messwert"],["MP1","11,8 V"],["MP2","10,4 V"],["MP3","12,6 V"],["MP4","9,9 V"]]},
-    options:["MP1","MP2","MP3","MP4","Alle Messwerte liegen gleich weit entfernt"], correct:0,
-    explanation:"11,8 V weicht um 0,2 V von 12 V ab und liegt damit am nächsten."
-  },
-  {
-    id:"PA-DEMO-07", part:"A", format:"diagram", topic:"Sensorik", points:1,
-    prompt:"Eine Näherungsschaltung soll metallische Werkstücke berührungslos erkennen. Welches Sensorprinzip eignet sich dafür?",
-    stimulus:{kind:"sensor"},
-    options:["Induktiv","Kapazitiv","Optisch mit Lichtschranke","Ultraschall","Mechanischer Endschalter"], correct:0,
-    explanation:"Induktive Näherungsschalter erkennen metallische Objekte über die Änderung ihres elektromagnetischen Feldes."
-  },
-  {
-    id:"PA-DEMO-08", part:"A", format:"calculation", topic:"Drehstromtechnik", points:1,
-    prompt:"Ein symmetrischer Drehstromverbraucher nimmt bei 400 V, 5 A und cos φ = 0,8 Leistung auf. Welche Wirkleistung ergibt sich näherungsweise?",
-    givens:[["Leiterspannung U","400 V"],["Leiterstrom I","5 A"],["Leistungsfaktor cos φ","0,8"]],
-    options:["0,8 kW","1,6 kW","2,77 kW","4,00 kW","6,93 kW"], correct:2,
-    explanation:"P = √3 · U · I · cos φ ≈ 1,732 · 400 · 5 · 0,8 ≈ 2,77 kW."
-  }
+ {id:"AP01",part:"A",format:"single_choice",topic:"Arbeitssicherheit",points:1,prompt:"Wer trägt im Unternehmen die Verantwortung für Arbeitsschutz und Arbeitssicherheit?",options:["Jeder Arbeitnehmer allein","Die Fachkraft für Arbeitssicherheit allein","Der Arbeitgeber"],correct:2,explanation:"Der Arbeitgeber trägt die Verantwortung für den Arbeitsschutz. Fachkräfte für Arbeitssicherheit beraten und unterstützen ihn."},
+ {id:"AP02",part:"A",format:"single_choice",topic:"Arbeitssicherheit",points:1,prompt:"Was ist bei der Fehlersuche an einer elektrischen Anlage besonders wichtig?",options:["Schutzmaßnahmen umgehen, um Zeit zu sparen","Fehler systematisch eingrenzen und erforderliche Sicherheitsmaßnahmen beachten","Arbeiten ohne Prüfung fortsetzen"],correct:1,explanation:"Die Fehlersuche muss systematisch und unter Beachtung der erforderlichen Schutzmaßnahmen erfolgen."},
+ {id:"AP03",part:"A",format:"single_choice",topic:"Arbeitssicherheit",points:1,prompt:"Was ist zu tun, wenn an einem elektrischen Gerät ein sicherheitsrelevanter Mangel erkannt wird?",options:["Den Mangel melden und das Gerät gegen weitere Benutzung sichern","Das Gerät weiterverwenden, bis es ausfällt","Den Mangel nur privat notieren"],correct:0,explanation:"Ein mangelhaftes Gerät darf keine Gefahr verursachen. Der Mangel ist zu melden und das Gerät bis zur Klärung gegen weitere Benutzung zu sichern."},
+ {id:"AP04",part:"A",format:"single_choice",topic:"Arbeitssicherheit",points:1,prompt:"Wie wird persönliche Schutzausrüstung ausgewählt?",options:["Unabhängig von der Tätigkeit immer gleich","Passend zur festgestellten Gefährdung und Tätigkeit","Nur nach persönlichem Geschmack"],correct:1,explanation:"Die Auswahl der PSA richtet sich nach der Gefährdungsbeurteilung und den konkreten Arbeitsbedingungen."},
+ {id:"AP05",part:"A",format:"single_choice",topic:"Schutztechnik",points:1,prompt:"Was beschreibt die IP-Schutzart eines elektrischen Betriebsmittels?",options:["Schutz gegen Berührung bzw. Eindringen von Fremdkörpern und Wasser","Schutz gegen Überlast und Kurzschluss","Schutz gegen jede Überspannung"],correct:0,explanation:"Die IP-Kennziffern beschreiben den Schutz gegen Berührung und Fremdkörper sowie gegen das Eindringen von Wasser."},
+ {id:"AP06",part:"A",format:"single_choice",topic:"Schutztechnik",points:1,prompt:"Welche Schutzfunktion kann ein Motorschutzschalter übernehmen?",options:["Ausschließlich Schutz vor Überspannung","Schutz des Motors vor Überlast und Kurzschluss","Ausschließlich Schutz vor Unterspannung"],correct:1,explanation:"Ein geeigneter Motorschutzschalter besitzt einen thermischen Überlastauslöser und einen magnetischen Kurzschlussauslöser."},
+ {id:"AP07",part:"A",format:"single_choice",topic:"Schutztechnik",points:1,prompt:"Wie wirkt ein Motorschutzrelais bei einer erkannten Motorüberlast typischerweise?",options:["Es betätigt einen Hilfskontakt und unterbricht dadurch den Steuerstromkreis des Schützes","Es erhöht die Netzspannung","Es überbrückt den Motorschutzschalter"],correct:0,explanation:"Das Motorschutzrelais öffnet bei Überlast seinen Öffnerkontakt im Steuerstromkreis. Das Schütz fällt ab und trennt den Motor vom Netz."},
+ {id:"AP08",part:"A",format:"calculation",topic:"Elektrotechnik",points:1,prompt:"Drei gleiche ohmsche Widerstände mit jeweils 5 kΩ sind im Dreieck an einem Drehstromnetz mit 400 V angeschlossen. Wie groß ist der Außenleiterstrom ungefähr?",givens:[["Strangwiderstand","5 kΩ"],["Leiterspannung","400 V"]],options:["0,046 A","0,080 A","0,139 A"],correct:2,explanation:"Im Dreieck liegt an jedem Widerstand die Leiterspannung. Strangstrom: 400 V / 5.000 Ω = 0,08 A. Außenleiterstrom: √3 · 0,08 A ≈ 0,139 A."},
+ {id:"AP09",part:"A",format:"calculation",topic:"Elektrotechnik",points:1,prompt:"Ein Kupferleiter besitzt einen Querschnitt von 40 mm² und wird mit 520 A belastet. Wie groß ist die Stromdichte?",givens:[["Stromstärke I","520 A"],["Querschnitt A","40 mm²"]],options:["2,17 A/mm²","13 A/mm²","86,67 A/mm²"],correct:1,explanation:"J = I / A = 520 A / 40 mm² = 13 A/mm²."},
+ {id:"AP10",part:"A",format:"single_choice",topic:"Steuerungstechnik",points:1,prompt:"Für welche Anwendung ist die Gebrauchskategorie AC-1 bei Schützen vorgesehen?",options:["Schalten von weitgehend ohmschen oder nur schwach induktiven Lasten","Häufiges Schalten von Käfigläufermotoren beim Anlauf","Schalten von Gleichstrommotoren mit hohem Anlaufstrom"],correct:0,explanation:"AC-1 gilt für nicht oder nur schwach induktive Lasten, beispielsweise Widerstandsheizungen."},
+ {id:"AP11",part:"A",format:"single_choice",topic:"Elektronik",points:1,prompt:"Wie verändert sich der kapazitive Blindwiderstand eines Kondensators bei steigender Frequenz?",options:["Er steigt","Er bleibt konstant","Er sinkt"],correct:2,explanation:"X_C = 1 / (2π · f · C). Bei gleichbleibender Kapazität sinkt der kapazitive Blindwiderstand mit steigender Frequenz."},
+ {id:"AP12",part:"A",format:"single_choice",topic:"Sensorik",points:1,prompt:"Welche Aussage zum Pt100-Sensor ist richtig?",options:["Er hat bei 0 °C einen Nennwiderstand von 100 Ω","Er hat bei 0 °C einen Nennwiderstand von 1.000 Ω","Sein Widerstand ist unabhängig von der Temperatur"],correct:0,explanation:"Pt100 steht für einen Platin-Widerstandsthermometer mit 100 Ω bei 0 °C."},
+ {id:"AP13",part:"A",format:"single_choice",topic:"Sensorik",points:1,prompt:"Was bedeutet die Bezeichnung Pt1000?",options:["100 Ω bei 0 °C","1.000 Ω bei 0 °C","1.000 Ω bei jeder Temperatur"],correct:1,explanation:"Ein Pt1000 besitzt bei 0 °C einen Nennwiderstand von 1.000 Ω. Der Widerstand ändert sich mit der Temperatur."},
+ {id:"AP14",part:"A",format:"single_choice",topic:"Sensorik",points:1,prompt:"Welches Sensorprinzip eignet sich zur berührungslosen Erkennung metallischer Werkstücke?",options:["Induktiv","Ausschließlich mechanisch","Ausschließlich thermisch"],correct:0,explanation:"Ein induktiver Näherungsschalter erkennt metallische Objekte über die Beeinflussung seines elektromagnetischen Wechselfeldes."},
+ {id:"AP15",part:"A",format:"single_choice",topic:"Digitaltechnik",points:1,prompt:"Welche Dualzahl entspricht der Hexadezimalzahl FF?",options:["1010 1010","1111 1111","1000 1111"],correct:1,explanation:"Jede Hexadezimalstelle entspricht vier Bits. F = 1111. Daher gilt FF₁₆ = 1111 1111₂."},
+ {id:"AP16",part:"A",format:"single_choice",topic:"IT-Grundlagen",points:1,prompt:"Was versteht man unter einem Intranet?",options:["Ein öffentliches weltweites Netzwerk","Ein internes Netzwerk innerhalb eines Unternehmens oder einer Organisation","Ein spezielles Betriebssystem"],correct:1,explanation:"Ein Intranet ist ein internes Rechnernetz, das organisatorisch auf eine Einrichtung oder ein Unternehmen begrenzt ist."},
+ {id:"AP17",part:"A",format:"single_choice",topic:"IT-Grundlagen",points:1,prompt:"Was bezeichnet man als Phishing?",options:["Den Versuch, durch gefälschte Nachrichten oder Webseiten vertrauliche Daten zu erlangen","Eine Methode zur Datenkomprimierung","Eine automatische Datensicherung"],correct:0,explanation:"Beim Phishing geben sich Angreifer als vertrauenswürdige Absender aus, um Passwörter oder andere vertrauliche Informationen zu stehlen."},
+ {id:"AP18",part:"A",format:"single_choice",topic:"IT-Grundlagen",points:1,prompt:"Welche Funktion hat ein Write-Protect-Schalter an einem USB-Datenträger?",options:["Er verhindert je nach Ausführung das Schreiben bzw. Verändern von Daten","Er erhöht die Speicherkapazität","Er verschlüsselt automatisch alle Dateien"],correct:0,explanation:"Der Schreibschutz verhindert Schreibzugriffe und schützt damit vor unbeabsichtigtem Ändern oder Löschen."},
+ {id:"AP19",part:"A",format:"single_choice",topic:"Arbeitssicherheit",points:1,prompt:"Warum ist eine sorgfältige Arbeitsplanung vor Beginn einer Fertigung wichtig?",options:["Damit Arbeitsabläufe, Material, Werkzeuge und Sicherheitsmaßnahmen vorbereitet werden","Damit Prüfungen und Kontrollen entfallen","Damit Arbeitsschritte ungeprüft ausgelassen werden"],correct:0,explanation:"Arbeitsplanung bereitet den Ablauf sicher und wirtschaftlich vor und stellt benötigte Ressourcen rechtzeitig bereit."},
+ {id:"AP20",part:"A",format:"single_choice",topic:"Schutztechnik",points:1,prompt:"Welche Aufgabe hat ein Fehlerstromschutzschalter (RCD)?",options:["Er erkennt einen Differenzstrom und schaltet bei Erreichen seines Auslösewertes ab","Er schützt ausschließlich vor Überlast","Er misst nur die Netzfrequenz"],correct:0,explanation:"Der RCD vergleicht die hin- und zurückfließenden Ströme. Bei einer Differenz oberhalb seines Bemessungsdifferenzstroms schaltet er ab."},
+ {id:"AP21",part:"A",format:"single_choice",topic:"Elektrotechnik",points:1,prompt:"Welche Einheit besitzt die elektrische Stromdichte?",options:["A/mm²","V/A","Ω/m"],correct:0,explanation:"Stromdichte ist Stromstärke geteilt durch Leiterquerschnitt. Bei Ampere und Quadratmillimetern lautet die Einheit A/mm²."},
+ {id:"AP22",part:"A",format:"single_choice",topic:"Elektrotechnik",points:1,prompt:"Welche Größe wird in Watt (W) angegeben?",options:["Elektrische Leistung","Elektrische Spannung","Elektrischer Widerstand"],correct:0,explanation:"Die elektrische Leistung wird in Watt angegeben. Spannung wird in Volt und Widerstand in Ohm angegeben."},
+ {id:"AP23",part:"A",format:"calculation",topic:"Elektrotechnik",points:1,prompt:"Ein ohmscher Verbraucher wird mit 24 V betrieben. Sein Widerstand beträgt 8 Ω. Welche Stromstärke fließt?",givens:[["Spannung U","24 V"],["Widerstand R","8 Ω"]],options:["2 A","3 A","4 A"],correct:1,explanation:"Nach dem Ohmschen Gesetz gilt I = U / R = 24 V / 8 Ω = 3 A."},
+ {id:"AP24",part:"A",format:"calculation",topic:"Drehstromtechnik",points:1,prompt:"Ein symmetrischer Drehstromverbraucher nimmt bei 400 V, 5 A und cos φ = 0,8 Leistung auf. Welche Wirkleistung ergibt sich näherungsweise?",givens:[["Leiterspannung U","400 V"],["Leiterstrom I","5 A"],["Leistungsfaktor cos φ","0,8"]],options:["0,8 kW","1,6 kW","2,77 kW"],correct:2,explanation:"P = √3 · U · I · cos φ = 1,732 · 400 · 5 · 0,8 ≈ 2.771 W = 2,77 kW."},
+ {id:"AP25",part:"A",format:"single_choice",topic:"Elektrotechnik",points:1,prompt:"Wie wird elektrische Leistung bei Gleichstrom berechnet?",options:["P = U · I","P = U / I","P = R / I"],correct:0,explanation:"Bei Gleichstrom gilt P = U · I. Spannung in Volt mal Strom in Ampere ergibt Watt."}
 ];
 
 function simexPartAEscape(value) {
@@ -350,38 +320,23 @@ function simexPartAFormatName(format) {
 }
 
 function renderSimexPartASetup() {
-  const counts = simexPartAPool.reduce((out, task) => {
-    out[task.format] = (out[task.format] || 0) + 1;
-    return out;
-  }, {});
-  const formats = [
-    ["single_choice","Auswahlfragen","5 Antwortmöglichkeiten · eine richtige Antwort","list-checks"],
-    ["calculation","Berechnungen","Gegeben · Gesucht · Rechenweg · Auswahl","calculator"],
-    ["datasheet","Datenblätter","Kenndaten lesen und auswerten","file-spreadsheet"],
-    ["graph","Diagramme und Kennlinien","Signal- und Kurvenverläufe interpretieren","chart-spline"],
-    ["circuit","Schaltpläne","Steuerungs- und Schaltungsprinzipien erkennen","workflow"],
-    ["diagram","Technische Bildaufgaben","Sensoren, Bauteile und Symbole erkennen","image"],
-    ["table","Tabellen","Messwerte und technische Angaben vergleichen","table"]
-  ];
+  const topics = [...new Set(simexPartAPool.map(task => task.topic))];
   $("#main-content").innerHTML =
-    '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSMODUS · TEIL A</div><h1>Prüfungssimulation</h1><p>Gebundene Aufgaben im Stil der schriftlichen Abschlussprüfung Teil 1.</p></div><span class="simex-part-a-pill">TEIL A</span></section>' +
-    '<section class="simex-a-intro panel"><div><span class="section-kicker">ZUFÄLLIGER AUFGABENPOOL</span><h2>Jeder Durchlauf wird neu zusammengestellt.</h2><p>SimEx wählt Aufgaben aus dem Pool und zeigt jede Aufgabe automatisch im passenden Layout an. Die folgenden Inhalte sind zunächst Demo-Platzhalter.</p></div><div class="simex-a-count"><strong>' + simexPartAPool.length + '</strong><span>Layout-Demos</span></div></section>' +
-    '<section class="simex-a-config panel"><div><span class="section-kicker">SIMULATION STARTEN</span><h2>Wähle den Umfang</h2><p>Die Kurzsimulation dient zum Testen der Aufgabenlayouts. Der vollständige Aufgabenpool mit Prüfungsumfang wird später angebunden.</p>' +
-    '<div class="simex-a-options"><label class="simex-a-option"><input type="radio" name="simex-a-count" value="4" checked><span><strong>Kurzsimulation</strong><small>4 zufällige Aufgaben</small></span></label><label class="simex-a-option"><input type="radio" name="simex-a-count" value="6"><span><strong>Erweiterte Simulation</strong><small>6 zufällige Aufgaben</small></span></label><label class="simex-a-option"><input type="radio" name="simex-a-count" value="all"><span><strong>Alle Layouts ansehen</strong><small>Alle 8 Demo-Aufgaben</small></span></label></div>' +
-    '<div class="simex-a-start"><span><i data-lucide="shuffle"></i> Zufallsauswahl ohne doppelte Aufgaben</span><button class="button button-primary" id="simex-a-start"><i data-lucide="play"></i> Simulation starten</button></div></section>' +
-    '<section class="simex-a-formats"><div class="section-heading"><div><span class="section-kicker">VORBEREITETE AUFGABENLAYOUTS</span><h2>Ein Aufgabenpool. Mehrere Darstellungsformen.</h2><p>Das Datenformat bestimmt, welches Antwortlayout geladen wird.</p></div></div><div class="simex-a-format-grid">' +
-    formats.map(item => '<article class="simex-a-format-card"><span class="simex-a-format-icon"><i data-lucide="' + item[3] + '"></i></span><span><strong>' + item[1] + '</strong><small>' + item[2] + '</small></span><b>' + (counts[item[0]] || 0) + '</b></article>').join("") +
-    '</div></section>' +
-    '<p class="simex-a-note"><i data-lucide="info"></i> Die Aufgaben und Grafiken sind eigens erstellte Layout-Demos. Sie sind keine Originalfragen aus den hochgeladenen IHK-Unterlagen.</p>';
+    '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSMODUS · TEIL A</div><h1>Prüfungssimulation</h1><p>Gemeinsamer, bildfreier Aufgabenpool aus den Teil-A-Prüfungen 2019, 2020 und 2021.</p></div><span class="simex-part-a-pill">TEIL A</span></section>' +
+    '<section class="simex-a-intro panel"><div><span class="section-kicker">GEMEINSAMER AUFGABENPOOL</span><h2>Alle passenden Fragen an einem Ort.</h2><p>Beantworte die Aufgaben und drücke auf „Korrigieren“. Du siehst direkt, ob deine Antwort richtig war, welche Lösung stimmt und warum.</p></div><div class="simex-a-count"><strong>' + simexPartAPool.length + '</strong><span>Fragen</span></div></section>' +
+    '<section class="simex-a-config panel"><div><span class="section-kicker">SIMULATION STARTEN</span><h2>Wähle den Umfang</h2><p>Die Fragen werden gemischt und ohne Bilder oder Schaltpläne angezeigt.</p>' +
+    '<div class="simex-a-options"><label class="simex-a-option"><input type="radio" name="simex-a-count" value="10" checked><span><strong>Kurzsimulation</strong><small>10 zufällige Fragen</small></span></label><label class="simex-a-option"><input type="radio" name="simex-a-count" value="15"><span><strong>Erweiterte Simulation</strong><small>15 zufällige Fragen</small></span></label><label class="simex-a-option"><input type="radio" name="simex-a-count" value="all"><span><strong>Gesamter Fragenpool</strong><small>Alle ' + simexPartAPool.length + ' Fragen</small></span></label></div>' +
+    '<div class="simex-a-start"><span><i data-lucide="shuffle"></i> Zufällige Reihenfolge · keine doppelten Fragen</span><button class="button button-primary" id="simex-a-start"><i data-lucide="play"></i> Simulation starten</button></div></section>' +
+    '<section class="simex-a-formats"><div class="section-heading"><div><span class="section-kicker">THEMEN IM POOL</span><h2>Gemischte AP1-Themen</h2><p>' + topics.map(simexPartAEscape).join(" · ") + '</p></div></div></section>' +
+    '<p class="simex-a-note"><i data-lucide="info"></i> Bildabhängige Aufgaben sind weggelassen. Textbasierte Fragen werden mit Lösung und Erklärung ausgewertet.</p>';
   refreshIcons();
   $("#simex-a-start").addEventListener("click", () => {
     const selected = $('input[name="simex-a-count"]:checked', $("#main-content"));
-    const amount = selected && selected.value === "all" ? simexPartAPool.length : Number(selected ? selected.value : 4);
-    simexPartAActive = {tasks:simexPartAShuffle(simexPartAPool).slice(0, amount), answers:{}, index:0};
+    const amount = selected && selected.value === "all" ? simexPartAPool.length : Number(selected ? selected.value : 10);
+    simexPartAActive = {tasks:simexPartAShuffle(simexPartAPool).slice(0, amount),answers:{},index:0,corrected:false};
     renderSimexPartASession();
   });
 }
-
 function renderSimexStimulus(task) {
   const stimulus = task.stimulus;
   if (!stimulus) return "";
@@ -402,6 +357,12 @@ function renderSimexStimulus(task) {
   return "";
 }
 
+function renderSimexPartAFeedback(task) {
+ const selected = simexPartAActive.answers[task.id];
+ const right = selected === task.correct;
+ return '<section class="simex-a-feedback ' + (right ? 'is-correct' : 'is-wrong') + '"><strong>' + (right ? 'Richtig beantwortet!' : 'Nicht richtig – hier ist die korrekte Lösung.') + '</strong><p><b>Richtige Antwort: ' + String.fromCharCode(65 + task.correct) + ' – ' + simexPartAEscape(task.options[task.correct]) + '</b></p><p>' + simexPartAEscape(task.explanation) + '</p></section>';
+}
+
 function renderSimexPartAQuestion(task, index) {
   const options = task.options.map((option, optionIndex) =>
     '<label class="simex-a-answer"><input type="radio" name="simex-answer-' + simexPartAEscape(task.id) + '" value="' + optionIndex + '" ' +
@@ -412,7 +373,7 @@ function renderSimexPartAQuestion(task, index) {
     '</div><label>Notizen / Rechenweg<textarea rows="3" placeholder="Hier kannst du deinen Rechenweg notieren …"></textarea></label></div>' : "";
   return '<article class="simex-a-question"><header><div><span class="simex-a-question-number">AUFGABE ' + String(index + 1).padStart(2,"0") + '</span><span class="simex-a-topic">' + simexPartAEscape(task.topic) + '</span></div><span class="simex-a-points">' + task.points + ' Pkt.</span></header>' +
     '<div class="simex-a-question-body"><div class="simex-a-format-label">' + simexPartAFormatName(task.format) + '</div><h2>' + simexPartAEscape(task.prompt) + '</h2>' +
-    renderSimexStimulus(task) + scratch + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>Genau eine Antwort ist richtig.</small></div><div class="simex-a-answer-list">' + options + '</div></div></article>';
+    renderSimexStimulus(task) + scratch + (simexPartAActive.corrected ? renderSimexPartAFeedback(task) : "") + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>Genau eine Antwort ist richtig.</small></div><div class="simex-a-answer-list">' + options + '</div></div></article>';
 }
 
 function renderSimexPartASession() {
@@ -427,25 +388,30 @@ function renderSimexPartASession() {
     '<nav class="simex-a-question-nav" aria-label="Aufgabennavigation">' + nav + '</nav>' +
     renderSimexPartAQuestion(task, simexPartAActive.index) +
     '<div class="simex-a-controls"><button class="button simex-a-exit" id="simex-a-prev" ' + (simexPartAActive.index === 0 ? "disabled" : "") + '><i data-lucide="chevron-left"></i> Zurück</button>' +
-    '<button class="button button-primary" id="simex-a-next">' + (simexPartAActive.index === total - 1 ? "Prüfung abgeben" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
+    '<button class="button button-secondary" id="simex-a-correct" ' + (simexPartAActive.answers[task.id] === undefined ? "disabled" : "") + '>Korrigieren</button><button class="button button-primary" id="simex-a-next">' + (simexPartAActive.index === total - 1 ? "Prüfung abgeben" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
   refreshIcons();
   $$('input[name="simex-answer-' + task.id + '"]', $("#main-content")).forEach(input =>
     input.addEventListener("change", () => {
       simexPartAActive.answers[task.id] = Number(input.value);
+      simexPartAActive.corrected = false;
       renderSimexPartASession();
     })
   );
-  $$("[data-simex-a-nav]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
+  $("#simex-a-correct").addEventListener("click", () => { simexPartAActive.corrected = true; renderSimexPartASession(); });
+  $("[data-simex-a-nav]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
     simexPartAActive.index = Number(button.dataset.simexANav);
+    simexPartAActive.corrected = false;
     renderSimexPartASession();
   }));
   $("#simex-a-prev").addEventListener("click", () => {
     simexPartAActive.index = Math.max(0, simexPartAActive.index - 1);
+    simexPartAActive.corrected = false;
     renderSimexPartASession();
   });
   $("#simex-a-next").addEventListener("click", () => {
     if (simexPartAActive.index < total - 1) {
       simexPartAActive.index++;
+      simexPartAActive.corrected = false;
       renderSimexPartASession();
     } else renderSimexPartAResult();
   });
