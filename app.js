@@ -119,6 +119,7 @@ function switchView(view) {
     $("#main-content").innerHTML = '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> DEINE AUSBILDUNG</div><h1>Lernmodule</h1><p>Wähle einen Lernbereich deiner technischen Ausbildung.</p></div></section><section class="subject-grid modules-grid">' + subjects.map(s => '<button class="subject-card" data-subject="' + s[0] + '"><span class="subject-top"><span class="subject-icon ' + s[5] + '"><i data-lucide="' + s[2] + '"></i></span><span class="subject-arrow"><i data-lucide="arrow-up-right"></i></span></span><strong>' + s[0] + '</strong><span class="subject-caption">' + s[1] + '</span><span class="subject-progress"><span class="subject-track"><i style="width:' + s[3] + '%"></i></span><b>' + s[3] + ' %</b></span><span class="subject-meta">' + s[4] + '</span></button>').join("") + '</section>';
     refreshIcons(); bindActions(); return;
   }
+  if (view === "exam") { renderSimexPartASetup(); return; }
   if (view === "cards") { renderCardSetup(); return; }
   if (view === "settings") {
     const currentTheme = document.documentElement.dataset.theme || "light";
@@ -268,3 +269,200 @@ function renderFlashResult(){
  refreshIcons();if($("#repeat-wrong"))$("#repeat-wrong").addEventListener("click",()=>repeatFlashCards(s.wrong));$("#repeat-all").addEventListener("click",()=>repeatFlashCards(s.deck));$("#change-topics").addEventListener("click",()=>switchView("cards"));
 }
 function repeatFlashCards(deck){flashRun={deck:deck.slice(),index:0,known:[],wrong:[],flipped:false};renderFlashCard();}
+
+
+/* SimEx Part A: format-specific demo tasks. Replace this local array with API/database records later. */
+let simexPartAActive = null;
+const simexPartAPool = [
+  {
+    id:"PA-DEMO-01", part:"A", format:"single_choice", topic:"Elektrotechnische Grundlagen", points:1,
+    prompt:"Welche physikalische Größe wird in Watt (W) angegeben?",
+    options:["Elektrische Leistung","Elektrische Spannung","Elektrischer Widerstand","Elektrische Ladung","Elektrische Energie"],
+    correct:0, explanation:"Die elektrische Leistung wird in Watt (W) angegeben."
+  },
+  {
+    id:"PA-DEMO-02", part:"A", format:"calculation", topic:"Technische Mathematik", points:1,
+    prompt:"Ein ohmscher Verbraucher wird mit 24 V betrieben. Sein Widerstand beträgt 8 Ω. Welche Stromstärke fließt?",
+    givens:[["Spannung U","24 V"],["Widerstand R","8 Ω"]],
+    options:["2 A","3 A","4 A","8 A","12 A"], correct:1,
+    explanation:"Nach I = U / R ergibt sich I = 24 V / 8 Ω = 3 A."
+  },
+  {
+    id:"PA-DEMO-03", part:"A", format:"datasheet", topic:"Elektrische Betriebsmittel", points:1,
+    prompt:"Das folgende Typenschild gehört zu einem Drehstrommotor. Welche Bemessungsspannung gilt bei einer Sternschaltung?",
+    stimulus:{kind:"datasheet",rows:[["Motorart","3~ Motor"],["Schaltung","Δ / Y"],["Bemessungsspannung","230 / 400 V"],["Bemessungsstrom","4,2 / 2,4 A"],["Frequenz","50 Hz"],["Leistung","1,1 kW"]]},
+    options:["230 V","400 V","690 V","24 V","Nicht aus dem Typenschild bestimmbar"], correct:1,
+    explanation:"Bei der Kennzeichnung Δ / Y 230 / 400 V beträgt die Bemessungsspannung in Sternschaltung 400 V."
+  },
+  {
+    id:"PA-DEMO-04", part:"A", format:"graph", topic:"Wechselstromtechnik", points:1,
+    prompt:"Der dargestellte Spannungsverlauf wiederholt sich nach 20 ms. Welche Frequenz hat das Signal?",
+    stimulus:{kind:"sine",label:"Schematischer Spannungsverlauf",period:"T = 20 ms"},
+    options:["5 Hz","20 Hz","50 Hz","60 Hz","100 Hz"], correct:2,
+    explanation:"f = 1 / T = 1 / 0,02 s = 50 Hz."
+  },
+  {
+    id:"PA-DEMO-05", part:"A", format:"circuit", topic:"Steuerungstechnik", points:1,
+    prompt:"Im vereinfachten Steuerstromkreis ist ein Hilfsschließer parallel zum Starttaster eingezeichnet. Welche Funktion hat dieser Kontakt?",
+    stimulus:{kind:"circuit"},
+    options:["Er bewirkt die Selbsthaltung des Schützes.","Er schützt den Motor vor Überlast.","Er misst den Spulenstrom.","Er unterbricht den Schutzleiter.","Er verändert die Drehrichtung des Motors."],
+    correct:0, explanation:"Der Hilfsschließer überbrückt nach dem Anziehen des Schützes den Starttaster und hält dadurch die Spule angezogen."
+  },
+  {
+    id:"PA-DEMO-06", part:"A", format:"table", topic:"Messen und Prüfen", points:1,
+    prompt:"Ein Messprotokoll enthält die folgenden Messwerte. Welcher Messwert liegt am nächsten bei 12 V?",
+    stimulus:{kind:"measurement",rows:[["Messpunkt","Messwert"],["MP1","11,8 V"],["MP2","10,4 V"],["MP3","12,6 V"],["MP4","9,9 V"]]},
+    options:["MP1","MP2","MP3","MP4","Alle Messwerte liegen gleich weit entfernt"], correct:0,
+    explanation:"11,8 V weicht um 0,2 V von 12 V ab und liegt damit am nächsten."
+  },
+  {
+    id:"PA-DEMO-07", part:"A", format:"diagram", topic:"Sensorik", points:1,
+    prompt:"Eine Näherungsschaltung soll metallische Werkstücke berührungslos erkennen. Welches Sensorprinzip eignet sich dafür?",
+    stimulus:{kind:"sensor"},
+    options:["Induktiv","Kapazitiv","Optisch mit Lichtschranke","Ultraschall","Mechanischer Endschalter"], correct:0,
+    explanation:"Induktive Näherungsschalter erkennen metallische Objekte über die Änderung ihres elektromagnetischen Feldes."
+  },
+  {
+    id:"PA-DEMO-08", part:"A", format:"calculation", topic:"Drehstromtechnik", points:1,
+    prompt:"Ein symmetrischer Drehstromverbraucher nimmt bei 400 V, 5 A und cos φ = 0,8 Leistung auf. Welche Wirkleistung ergibt sich näherungsweise?",
+    givens:[["Leiterspannung U","400 V"],["Leiterstrom I","5 A"],["Leistungsfaktor cos φ","0,8"]],
+    options:["0,8 kW","1,6 kW","2,77 kW","4,00 kW","6,93 kW"], correct:2,
+    explanation:"P = √3 · U · I · cos φ ≈ 1,732 · 400 · 5 · 0,8 ≈ 2,77 kW."
+  }
+];
+
+function simexPartAEscape(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+function simexPartAShuffle(items) {
+  const result = items.slice();
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+function simexPartAFormatName(format) {
+  return ({
+    single_choice:"Auswahlaufgabe", calculation:"Berechnungsaufgabe", datasheet:"Datenblatt-Aufgabe",
+    graph:"Diagrammaufgabe", circuit:"Schaltplanaufgabe", table:"Tabellenaufgabe", diagram:"Anwendungsaufgabe"
+  })[format] || "Aufgabe";
+}
+
+function renderSimexPartASetup() {
+  const counts = simexPartAPool.reduce((out, task) => {
+    out[task.format] = (out[task.format] || 0) + 1;
+    return out;
+  }, {});
+  const formats = [
+    ["single_choice","Auswahlfragen","5 Antwortmöglichkeiten · eine richtige Antwort","list-checks"],
+    ["calculation","Berechnungen","Gegeben · Gesucht · Rechenweg · Auswahl","calculator"],
+    ["datasheet","Datenblätter","Kenndaten lesen und auswerten","file-spreadsheet"],
+    ["graph","Diagramme und Kennlinien","Signal- und Kurvenverläufe interpretieren","chart-spline"],
+    ["circuit","Schaltpläne","Steuerungs- und Schaltungsprinzipien erkennen","workflow"],
+    ["table","Tabellen","Messwerte und technische Angaben vergleichen","table"]
+  ];
+  $("#main-content").innerHTML =
+    '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSMODUS · TEIL A</div><h1>Prüfungssimulation</h1><p>Gebundene Aufgaben im Stil der schriftlichen Abschlussprüfung Teil 1.</p></div><span class="simex-part-a-pill">TEIL A</span></section>' +
+    '<section class="simex-a-intro panel"><div><span class="section-kicker">ZUFÄLLIGER AUFGABENPOOL</span><h2>Jeder Durchlauf wird neu zusammengestellt.</h2><p>SimEx wählt Aufgaben aus dem Pool und zeigt jede Aufgabe automatisch im passenden Layout an. Die folgenden Inhalte sind zunächst Demo-Platzhalter.</p></div><div class="simex-a-count"><strong>' + simexPartAPool.length + '</strong><span>Layout-Demos</span></div></section>' +
+    '<section class="simex-a-config panel"><div><span class="section-kicker">SIMULATION STARTEN</span><h2>Wähle den Umfang</h2><p>Die Kurzsimulation dient zum Testen der Aufgabenlayouts. Der vollständige Aufgabenpool mit Prüfungsumfang wird später angebunden.</p>' +
+    '<div class="simex-a-options"><label class="simex-a-option"><input type="radio" name="simex-a-count" value="4" checked><span><strong>Kurzsimulation</strong><small>4 zufällige Aufgaben</small></span></label><label class="simex-a-option"><input type="radio" name="simex-a-count" value="6"><span><strong>Erweiterte Simulation</strong><small>6 zufällige Aufgaben</small></span></label><label class="simex-a-option"><input type="radio" name="simex-a-count" value="all"><span><strong>Alle Layouts ansehen</strong><small>Alle 8 Demo-Aufgaben</small></span></label></div>' +
+    '<div class="simex-a-start"><span><i data-lucide="shuffle"></i> Zufallsauswahl ohne doppelte Aufgaben</span><button class="button button-primary" id="simex-a-start"><i data-lucide="play"></i> Simulation starten</button></div></section>' +
+    '<section class="simex-a-formats"><div class="section-heading"><div><span class="section-kicker">VORBEREITETE AUFGABENLAYOUTS</span><h2>Ein Aufgabenpool. Mehrere Darstellungsformen.</h2><p>Das Datenformat bestimmt, welches Antwortlayout geladen wird.</p></div></div><div class="simex-a-format-grid">' +
+    formats.map(item => '<article class="simex-a-format-card"><span class="simex-a-format-icon"><i data-lucide="' + item[3] + '"></i></span><span><strong>' + item[1] + '</strong><small>' + item[2] + '</small></span><b>' + (counts[item[0]] || 0) + '</b></article>').join("") +
+    '</div></section>' +
+    '<p class="simex-a-note"><i data-lucide="info"></i> Die Aufgaben und Grafiken sind eigens erstellte Layout-Demos. Sie sind keine Originalfragen aus den hochgeladenen IHK-Unterlagen.</p>';
+  refreshIcons();
+  $("#simex-a-start").addEventListener("click", () => {
+    const selected = $('input[name="simex-a-count"]:checked', $("#main-content"));
+    const amount = selected && selected.value === "all" ? simexPartAPool.length : Number(selected ? selected.value : 4);
+    simexPartAActive = {tasks:simexPartAShuffle(simexPartAPool).slice(0, amount), answers:{}, index:0};
+    renderSimexPartASession();
+  });
+}
+
+function renderSimexStimulus(task) {
+  const stimulus = task.stimulus;
+  if (!stimulus) return "";
+  if (stimulus.kind === "datasheet" || stimulus.kind === "measurement") {
+    return '<div class="simex-a-stimulus"><div class="simex-a-stimulus-label">' + (stimulus.kind === "datasheet" ? "TECHNISCHES DATENBLATT · DEMO" : "MESSPROTOKOLL · DEMO") + '</div><div class="simex-a-table-wrap"><table><tbody>' +
+      stimulus.rows.map(row => '<tr>' + row.map(cell => '<td>' + simexPartAEscape(cell) + '</td>').join("") + '</tr>').join("") +
+      '</tbody></table></div></div>';
+  }
+  if (stimulus.kind === "sine") {
+    return '<div class="simex-a-stimulus"><div class="simex-a-stimulus-label">SIGNALVERLAUF · SCHEMATISCH</div><svg class="simex-a-svg" viewBox="0 0 620 190" role="img" aria-label="Sinusförmiger Spannungsverlauf über der Zeit"><defs><pattern id="simex-sine-grid" width="31" height="22" patternUnits="userSpaceOnUse"><path d="M31 0H0V22" fill="none" stroke="currentColor" stroke-opacity=".13"/></pattern></defs><rect x="40" y="15" width="550" height="145" fill="url(#simex-sine-grid)"/><path d="M40 88H590M40 15V160" stroke="currentColor" stroke-opacity=".55" fill="none"/><path d="M40 88 C80 10 120 10 160 88 S240 166 280 88 S360 10 400 88 S480 166 520 88 S560 10 590 58" fill="none" stroke="#d8ad00" stroke-width="3"/><text x="14" y="22" fill="currentColor" font-size="11">U</text><text x="590" y="180" fill="currentColor" font-size="11">t</text><text x="145" y="180" fill="currentColor" font-size="11">T</text><path d="M40 166V171M160 166V171M40 169H160" stroke="currentColor" stroke-width="1.2"/><text x="170" y="174" fill="currentColor" font-size="11">' + stimulus.period + '</text></svg></div>';
+  }
+  if (stimulus.kind === "circuit") {
+    return '<div class="simex-a-stimulus"><div class="simex-a-stimulus-label">VEREINFACHTER STEUERSTROMKREIS · DEMO</div><svg class="simex-a-svg" viewBox="0 0 620 210" role="img" aria-label="Vereinfachter Schützsteuerkreis mit Starttaster, Stopptaster und Selbsthaltekontakt"><path d="M45 35V176H575V35M45 75H125M190 75H300M360 75H490M535 75H575" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M125 62L151 88M164 62L190 88" stroke="currentColor" stroke-width="2.4"/><path d="M300 62L326 88M339 62L365 88" stroke="currentColor" stroke-width="2.4"/><path d="M300 75V130H490V75" stroke="#d8ad00" stroke-width="2" stroke-dasharray="5 4" fill="none"/><path d="M490 62V88M505 62V88" stroke="currentColor" stroke-width="2.4"/><circle cx="515" cy="75" r="18" fill="none" stroke="currentColor" stroke-width="2"/><text x="515" y="79" fill="currentColor" font-size="10" text-anchor="middle">K1</text><text x="156" y="48" fill="currentColor" font-size="11" text-anchor="middle">S0 Stop</text><text x="332" y="48" fill="currentColor" font-size="11" text-anchor="middle">S1 Start</text><text x="397" y="147" fill="#d8ad00" font-size="11" text-anchor="middle">K1.1</text><text x="515" y="112" fill="currentColor" font-size="11" text-anchor="middle">Spule</text><text x="45" y="24" fill="currentColor" font-size="11">L+</text><text x="575" y="195" fill="currentColor" font-size="11" text-anchor="end">N</text></svg></div>';
+  }
+  if (stimulus.kind === "sensor") {
+    return '<div class="simex-a-stimulus"><div class="simex-a-stimulus-label">SENSORPRINZIP · SCHEMATISCH</div><svg class="simex-a-svg" viewBox="0 0 620 160" role="img" aria-label="Näherungsschalter erkennt ein Metallobjekt berührungslos"><rect x="90" y="48" width="130" height="64" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M111 62H199M111 75H199M111 88H199" stroke="#d8ad00" stroke-width="2"/><rect x="425" y="57" width="70" height="46" rx="5" fill="#d8ad00" fill-opacity=".16" stroke="#d8ad00" stroke-width="2"/><path d="M230 80H410" stroke="currentColor" stroke-width="1.8" stroke-dasharray="6 5"/><path d="M370 70L410 80L370 90" stroke="#d8ad00" stroke-width="2" fill="none"/><text x="155" y="132" fill="currentColor" text-anchor="middle" font-size="12">Sensor</text><text x="460" y="132" fill="currentColor" text-anchor="middle" font-size="12">Metallobjekt</text></svg></div>';
+  }
+  return "";
+}
+
+function renderSimexPartAQuestion(task, index) {
+  const options = task.options.map((option, optionIndex) =>
+    '<label class="simex-a-answer"><input type="radio" name="simex-answer-' + simexPartAEscape(task.id) + '" value="' + optionIndex + '" ' +
+    (simexPartAActive.answers[task.id] === optionIndex ? "checked" : "") + '><span class="simex-a-answer-letter">' + String.fromCharCode(65 + optionIndex) + '</span><span>' + simexPartAEscape(option) + '</span></label>'
+  ).join("");
+  const scratch = task.givens ? '<div class="simex-a-givens"><div><span class="simex-a-stimulus-label">GEGEBEN</span>' +
+    task.givens.map(pair => '<span><small>' + simexPartAEscape(pair[0]) + '</small><strong>' + simexPartAEscape(pair[1]) + '</strong></span>').join("") +
+    '</div><label>Notizen / Rechenweg<textarea rows="3" placeholder="Hier kannst du deinen Rechenweg notieren …"></textarea></label></div>' : "";
+  return '<article class="simex-a-question"><header><div><span class="simex-a-question-number">AUFGABE ' + String(index + 1).padStart(2,"0") + '</span><span class="simex-a-topic">' + simexPartAEscape(task.topic) + '</span></div><span class="simex-a-points">' + task.points + ' Pkt.</span></header>' +
+    '<div class="simex-a-question-body"><div class="simex-a-format-label">' + simexPartAFormatName(task.format) + '</div><h2>' + simexPartAEscape(task.prompt) + '</h2>' +
+    renderSimexStimulus(task) + scratch + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>Genau eine Antwort ist richtig.</small></div><div class="simex-a-answer-list">' + options + '</div></div></article>';
+}
+
+function renderSimexPartASession() {
+  if (!simexPartAActive) return renderSimexPartASetup();
+  const task = simexPartAActive.tasks[simexPartAActive.index];
+  const total = simexPartAActive.tasks.length;
+  const answered = Object.keys(simexPartAActive.answers).length;
+  const nav = simexPartAActive.tasks.map((t, i) => '<button class="simex-a-nav-dot ' + (i === simexPartAActive.index ? "current" : "") + (simexPartAActive.answers[t.id] !== undefined ? " answered" : "") + '" data-simex-a-nav="' + i + '" aria-label="Aufgabe ' + (i+1) + '">' + (i+1) + '</button>').join("");
+  $("#main-content").innerHTML =
+    '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSSIMULATION · TEIL A</div><h1>Gebundene Aufgaben</h1><p>Demo-Durchlauf · ' + total + ' zufällig ausgewählte Aufgaben</p></div><button class="button simex-a-exit" id="simex-a-exit"><i data-lucide="x"></i> Beenden</button></section>' +
+    '<section class="simex-a-session-meta"><div><strong>' + (simexPartAActive.index + 1) + ' <span>/ ' + total + '</span></strong><small>Aufgabe</small></div><div><strong>' + answered + ' <span>/ ' + total + '</span></strong><small>Beantwortet</small></div><div class="simex-a-progress"><span style="width:' + (answered / total * 100) + '%"></span></div></section>' +
+    '<nav class="simex-a-question-nav" aria-label="Aufgabennavigation">' + nav + '</nav>' +
+    renderSimexPartAQuestion(task, simexPartAActive.index) +
+    '<div class="simex-a-controls"><button class="button simex-a-exit" id="simex-a-prev" ' + (simexPartAActive.index === 0 ? "disabled" : "") + '><i data-lucide="chevron-left"></i> Zurück</button>' +
+    '<button class="button button-primary" id="simex-a-next">' + (simexPartAActive.index === total - 1 ? "Prüfung abgeben" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
+  refreshIcons();
+  $$('input[name="simex-answer-' + task.id + '"]', $("#main-content")).forEach(input =>
+    input.addEventListener("change", () => {
+      simexPartAActive.answers[task.id] = Number(input.value);
+      renderSimexPartASession();
+    })
+  );
+  $$("[data-simex-a-nav]", $("#main-content")).forEach(button => button.addEventListener("click", () => {
+    simexPartAActive.index = Number(button.dataset.simexANav);
+    renderSimexPartASession();
+  }));
+  $("#simex-a-prev").addEventListener("click", () => {
+    simexPartAActive.index = Math.max(0, simexPartAActive.index - 1);
+    renderSimexPartASession();
+  });
+  $("#simex-a-next").addEventListener("click", () => {
+    if (simexPartAActive.index < total - 1) {
+      simexPartAActive.index++;
+      renderSimexPartASession();
+    } else renderSimexPartAResult();
+  });
+  $("#simex-a-exit").addEventListener("click", renderSimexPartASetup);
+}
+
+function renderSimexPartAResult() {
+  const tasks = simexPartAActive.tasks;
+  const answers = simexPartAActive.answers;
+  const correct = tasks.filter(task => answers[task.id] === task.correct).length;
+  const percent = Math.round(correct / tasks.length * 100);
+  $("#main-content").innerHTML =
+    '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> TEIL A · DEMO ABGESCHLOSSEN</div><h1>Dein Ergebnis</h1><p>Die Musterlösungen dieser Demo-Aufgaben wurden zur Auswertung verwendet.</p></div></section>' +
+    '<section class="simex-a-result panel"><div class="simex-a-result-score">' + percent + '<small>%</small></div><h2>' + correct + ' von ' + tasks.length + ' richtig</h2><p>Dies ist ausschließlich eine Layout-Demo mit eigens erstellten Platzhalteraufgaben, keine offizielle Prüfungsbewertung.</p>' +
+    '<div class="simex-a-result-list">' + tasks.map((task, i) => {
+      const ok = answers[task.id] === task.correct;
+      return '<div><span class="simex-a-result-status ' + (ok ? "is-correct" : "is-wrong") + '">' + (ok ? "✓" : "×") + '</span><span><strong>Aufgabe ' + (i+1) + '</strong><small>' + simexPartAEscape(task.topic) + '</small></span><b>' + (answers[task.id] === undefined ? "Nicht beantwortet" : (ok ? "Richtig" : "Nicht richtig")) + '</b></div>';
+    }).join("") + '</div><button class="button button-primary" id="simex-a-again"><i data-lucide="shuffle"></i> Neue Zufallsauswahl</button></section>';
+  refreshIcons();
+  $("#simex-a-again").addEventListener("click", renderSimexPartASetup);
+}
