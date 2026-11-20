@@ -360,6 +360,7 @@ function renderSimexPartASetup() {
     ["datasheet","Datenblätter","Kenndaten lesen und auswerten","file-spreadsheet"],
     ["graph","Diagramme und Kennlinien","Signal- und Kurvenverläufe interpretieren","chart-spline"],
     ["circuit","Schaltpläne","Steuerungs- und Schaltungsprinzipien erkennen","workflow"],
+    ["diagram","Technische Bildaufgaben","Sensoren, Bauteile und Symbole erkennen","image"],
     ["table","Tabellen","Messwerte und technische Angaben vergleichen","table"]
   ];
   $("#main-content").innerHTML =
