@@ -372,7 +372,7 @@ function renderSimexPartAQuestion(task, index) {
   const scratch = task.givens ? '<div class="simex-a-givens"><div><span class="simex-a-stimulus-label">GEGEBEN</span>' +
     task.givens.map(pair => '<span><small>' + simexPartAEscape(pair[0]) + '</small><strong>' + simexPartAEscape(pair[1]) + '</strong></span>').join("") +
     '</div><label>Notizen / Rechenweg<textarea rows="3" placeholder="Hier kannst du deinen Rechenweg notieren …"></textarea></label></div>' : "";
-  return '<article class="simex-a-question"><header><div><span class="simex-a-question-number">AUFGABE ' + String(index + 1).padStart(2,"0") + '</span><span class="simex-a-topic">' + simexPartAEscape(task.topic) + '</span></div><span class="simex-a-points">' + task.points + ' Pkt.</span></header>' +
+  return '<article class="simex-a-question"><header><div><span class="simex-a-question-number">AUFGABE ' + String(index + 1).padStart(2,"0") + '</span><span class="simex-a-topic">' + simexPartAEscape(task.topic) + '</span><small class="simex-a-source">' + simexPartAEscape(task.source) + '</small></div><span class="simex-a-points">' + task.points + ' Pkt.</span></header>' +
     '<div class="simex-a-question-body"><div class="simex-a-format-label">' + simexPartAFormatName(task.format) + '</div><h2>' + simexPartAEscape(task.prompt) + '</h2>' +
     renderSimexStimulus(task) + scratch + (simexPartAActive.correctedFor === task.id ? renderSimexPartAFeedback(task) : "") + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>Genau eine Antwort ist richtig.</small></div><div class="simex-a-answer-list">' + options + '</div></div></article>';
 }
