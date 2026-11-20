@@ -2074,19 +2074,3 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
     margin-left:0;
   }
 }
-
-
-/* Keep answer option text size consistent before and after correction */
-.simex-a-answer .simex-a-answer-text {
-  font-size: 11px;
-  line-height: 1.45;
-}
-.simex-a-answer>span.simex-a-answer-status {
-  font-size: 9px;
-  line-height: 1;
-}
-@media (max-width: 520px) {
-  .simex-a-answer>span.simex-a-answer-status {
-    font-size: 8px;
-  }
-}
