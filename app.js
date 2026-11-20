@@ -57,7 +57,7 @@ function showToast(message) {
 const viewInfo = {
   dashboard: ["Dashboard", "Dein persönlicher Lernüberblick."],
   modules: ["Lernmodule", "Alle Lerninhalte deiner technischen Ausbildung im Überblick."],
-  exam: ["Prüfungssimulation", "Bereite dich mit realistischen Wissenschecks auf deine Prüfung vor."],
+  exam: ["Prüfungssimulation", "Zufällig zusammengestellte Aufgaben aus Teil A in passenden Prüfungsformaten."],
   cards: ["Karteikarten", "Wiederhole wichtige Begriffe und Zusammenhänge."],
   assistant: ["KI-Lernassistent", "Stelle Fachfragen und lass dir technische Zusammenhänge erklären."],
   stats: ["Meine Ergebnisse", "Behalte deinen Lernfortschritt und deine Entwicklung im Blick."],
@@ -174,8 +174,8 @@ function bindActions() {
     });
   });
 
-  $$('[data-action="start-exam"]', $("#main-content")).forEach(item => {
-    item.addEventListener("click", () => openExamModal(item));
+  $('[data-action="start-exam"]', $("#main-content")).forEach(item => {
+    item.addEventListener("click", () => switchView("exam"));
   });
 
   $$('[data-action="continue-learning"]', $("#main-content")).forEach(item => {
