@@ -368,7 +368,6 @@ function renderSimexPartAFeedback(task) {
 
 function renderSimexPartAQuestion(task, index) {
   const total = simexPartAActive.tasks.length;
-  const current = simexPartAActive.index + 1;
   const answered = Object.keys(simexPartAActive.answers).length;
   const progress = Math.round((answered / total) * 100);
   const options = task.options.map((option, optionIndex) =>
@@ -378,15 +377,21 @@ function renderSimexPartAQuestion(task, index) {
   const scratch = task.givens ? '<div class="simex-a-givens"><div><span class="simex-a-stimulus-label">GEGEBEN</span>' +
     task.givens.map(pair => '<span><small>' + simexPartAEscape(pair[0]) + '</small><strong>' + simexPartAEscape(pair[1]) + '</strong></span>').join("") +
     '</div><label>Notizen / Rechenweg<textarea rows="3" placeholder="Hier kannst du deinen Rechenweg notieren …"></textarea></label></div>' : "";
-  const headerProgress =
-    '<div class="simex-a-header-status" aria-label="Prüfungsfortschritt">' +
-      '<div class="simex-a-header-counts">' +
-        '<span><strong>' + current + ' <small>/ ' + total + '</small></strong><em>Aufgabe</em></span>' +
-        '<span><strong>' + answered + ' <small>/ ' + total + '</small></strong><em>Beantwortet</em></span>' +
-      '</div>' +
-      '<div class="simex-a-header-progress"><span style="width:' + progress + '%"></span></div>' +
+  const nav = simexPartAActive.tasks.map((t, i) =>
+    '<button class="simex-a-nav-dot ' + (i === simexPartAActive.index ? "current" : "") +
+    (simexPartAActive.answers[t.id] !== undefined ? " answered" : "") +
+    '" data-simex-a-nav="' + i + '" aria-label="Aufgabe ' + (i+1) + '">' + (i+1) + '</button>'
+  ).join("");
+  const progressBar =
+    '<div class="simex-a-header-progress" role="progressbar" aria-label="Beantwortete Aufgaben" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + progress + '">' +
+      '<span style="width:' + progress + '%"></span>' +
     '</div>';
-  return '<article class="simex-a-question"><header><div class="simex-a-question-ident"><span class="simex-a-question-number">AUFGABE ' + String(index + 1).padStart(2,"0") + '</span><span class="simex-a-topic">' + simexPartAEscape(task.topic) + '</span><small class="simex-a-source">' + simexPartAEscape(task.source) + '</small></div>' + headerProgress + '<span class="simex-a-points">' + task.points + ' Pkt.</span></header>' +
+  return '<article class="simex-a-question"><header>' +
+    '<div class="simex-a-question-ident"><strong class="simex-a-question-number">AUFGABE ' + String(index + 1).padStart(2,"0") + '</strong><span class="simex-a-topic">' + simexPartAEscape(task.topic) + '</span><small class="simex-a-source">' + simexPartAEscape(task.source) + '</small></div>' +
+    '<nav class="simex-a-header-nav" aria-label="Aufgabenauswahl">' + nav + '</nav>' +
+    progressBar +
+    '<span class="simex-a-points">' + task.points + ' Pkt.</span>' +
+    '</header>' +
     '<div class="simex-a-question-body"><div class="simex-a-format-label">' + simexPartAFormatName(task.format) + '</div><h2>' + simexPartAEscape(task.prompt) + '</h2>' +
     renderSimexStimulus(task) + scratch + (simexPartAActive.correctedFor === task.id ? renderSimexPartAFeedback(task) : "") + '<div class="simex-a-answer-head"><strong>Antwort auswählen</strong><small>Genau eine Antwort ist richtig.</small></div><div class="simex-a-answer-list">' + options + '</div></div></article>';
 }
@@ -396,17 +401,11 @@ function renderSimexPartASession() {
   const task = simexPartAActive.tasks[simexPartAActive.index];
   const total = simexPartAActive.tasks.length;
   const isCorrected = simexPartAActive.correctedFor === task.id;
-  const nav = simexPartAActive.tasks.map((t, i) => '<button class="simex-a-nav-dot ' + (i === simexPartAActive.index ? "current" : "") + (simexPartAActive.answers[t.id] !== undefined ? " answered" : "") + '" data-simex-a-nav="' + i + '" aria-label="Aufgabe ' + (i+1) + '">' + (i+1) + '</button>').join("");
   $("#main-content").innerHTML =
     '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSSIMULATION · TEIL A</div><h1>Gebundene Aufgaben</h1><p>AP1-Fragenpool · ' + total + ' zufällig ausgewählte Aufgaben</p></div><button class="button simex-a-exit" id="simex-a-exit"><i data-lucide="x"></i> Beenden</button></section>' +
-    '<div class="simex-a-workspace">' +
-      '<nav class="simex-a-question-nav" aria-label="Aufgabennavigation">' + nav + '</nav>' +
-      '<div class="simex-a-exam-column">' +
-        renderSimexPartAQuestion(task, simexPartAActive.index) +
-        '<div class="simex-a-controls"><button class="button simex-a-exit" id="simex-a-prev" ' + (simexPartAActive.index === 0 ? "disabled" : "") + '><i data-lucide="chevron-left"></i> Zurück</button>' +
-        '<button class="button button-secondary" id="simex-a-correct" ' + (simexPartAActive.answers[task.id] === undefined ? "disabled" : "") + '>Korrigieren</button><button class="button button-primary" id="simex-a-next" ' + (!isCorrected ? "disabled" : "") + '>' + (simexPartAActive.index === total - 1 ? "Auswertung anzeigen" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>' +
-      '</div>' +
-    '</div>';
+    renderSimexPartAQuestion(task, simexPartAActive.index) +
+    '<div class="simex-a-controls"><button class="button simex-a-exit" id="simex-a-prev" ' + (simexPartAActive.index === 0 ? "disabled" : "") + '><i data-lucide="chevron-left"></i> Zurück</button>' +
+    '<button class="button button-secondary" id="simex-a-correct" ' + (simexPartAActive.answers[task.id] === undefined ? "disabled" : "") + '>Korrigieren</button><button class="button button-primary" id="simex-a-next" ' + (!isCorrected ? "disabled" : "") + '>' + (simexPartAActive.index === total - 1 ? "Auswertung anzeigen" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
   refreshIcons();
   $$('input[name="simex-answer-' + task.id + '"]', $("#main-content")).forEach(input =>
     input.addEventListener("change", () => {
