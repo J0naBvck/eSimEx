@@ -1190,3 +1190,24 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
   margin-left:auto;
  }
 }
+
+
+/* Answer correction: outline only, no explanation or answer reveal */
+.simex-a-answer.is-correct{
+ border:2px solid #22a06b;
+}
+.simex-a-answer.is-wrong{
+ border:2px solid #dc5b55;
+}
+.simex-a-answer.is-correct:hover,
+.simex-a-answer.is-wrong:hover{
+ background:var(--surface);
+}
+.simex-a-answer.is-correct .simex-a-answer-letter{
+ border-color:#22a06b;
+ color:#22a06b;
+}
+.simex-a-answer.is-wrong .simex-a-answer-letter{
+ border-color:#dc5b55;
+ color:#dc5b55;
+}
