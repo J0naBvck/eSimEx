@@ -894,3 +894,14 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
  .simex-a-controls .button{flex:1;padding:0 10px}
  .simex-a-result{padding:23px 17px}
 }
+
+/* Antwort-Feedback im Prüfungssimulator */
+.simex-a-feedback{margin:15px 0;padding:15px 17px;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface-secondary);font-size:12px;line-height:1.65}
+.simex-a-feedback strong{display:block;font-size:13px;margin-bottom:7px}
+.simex-a-feedback p{margin:6px 0;color:var(--ink)}
+.simex-a-feedback.is-correct{border-color:rgba(35,155,99,.45);background:rgba(35,155,99,.08)}
+.simex-a-feedback.is-correct strong{color:#239b63}
+.simex-a-feedback.is-wrong{border-color:rgba(220,100,80,.45);background:rgba(220,100,80,.08)}
+.simex-a-feedback.is-wrong strong{color:#d96b56}
+.simex-a-controls{flex-wrap:wrap}
+.simex-a-controls #simex-a-correct{margin-right:auto}
