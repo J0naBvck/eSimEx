@@ -1421,3 +1421,14 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
   box-sizing:border-box;
   border:1px solid var(--line-strong);
 }
+
+
+/* Clickable review rows for incorrect exam answers */
+.simex-a-review-intro{color:var(--muted);font-size:13px;margin:8px 0 12px}
+.simex-a-result-row{display:flex;width:100%;align-items:center;gap:11px;padding:10px 3px;border:0;border-bottom:1px solid var(--line);background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit;flex-wrap:wrap}
+.simex-a-result-row:hover{background:var(--surface-soft,rgba(128,128,128,.06))}
+.simex-a-result-row>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:2px}
+.simex-a-result-row strong{font-size:11px}
+.simex-a-result-row small{color:var(--muted);font-size:9px}
+.simex-a-result-row b{color:var(--muted);font-size:10px}
+.simex-a-review-hint{width:100%;padding-left:35px;color:var(--accent,#b18a20);font-size:10px;font-weight:700}
