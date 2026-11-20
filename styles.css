@@ -2101,3 +2101,18 @@ button:focus-visible,a:focus-visible{outline-color:rgba(255,208,0,.5)}
   border-color: rgba(169, 129, 0, .3);
   background: rgba(169, 129, 0, .08);
 }
+
+/* Answer options: keep the actual answer text comfortably readable at all times */
+.simex-a-answer > .simex-a-answer-text {
+  font-size: 14px !important;
+  line-height: 1.5;
+}
+.simex-a-answer > .simex-a-answer-status {
+  font-size: 9px;
+  line-height: 1;
+}
+@media (max-width: 520px) {
+  .simex-a-answer > .simex-a-answer-status {
+    font-size: 8px;
+  }
+}
