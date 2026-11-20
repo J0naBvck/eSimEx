@@ -174,7 +174,7 @@ function bindActions() {
     });
   });
 
-  $('[data-action="start-exam"]', $("#main-content")).forEach(item => {
+  $$('[data-action="start-exam"]', $("#main-content")).forEach(item => {
     item.addEventListener("click", () => switchView("exam"));
   });
 
