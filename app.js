@@ -438,7 +438,7 @@ function renderSimexPartASession() {
     '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSSIMULATION · TEIL A</div><h1>Gebundene Aufgaben</h1><p>AP1-Fragenpool · ' + total + ' zufällig ausgewählte Aufgaben</p></div><button class="button simex-a-exit" id="simex-a-exit"><i data-lucide="x"></i> Beenden</button></section>' +
     renderSimexPartAQuestion(task, simexPartAActive.index) +
     '<div class="simex-a-controls"><button class="button simex-a-exit" id="simex-a-prev" ' + (simexPartAActive.index === 0 ? "disabled" : "") + '><i data-lucide="chevron-left"></i> Zurück</button>' +
-    '<button class="button button-secondary" id="simex-a-correct" ' + (simexPartAActive.answers[task.id] === undefined || isCorrected ? "disabled" : "") + '>' + (isCorrected ? "Gelöst" : "Lösen") + '</button><button class="button button-primary" id="simex-a-next" ' + (!isCorrected ? "disabled" : "") + '>' + (simexPartAActive.index === total - 1 ? "Auswertung anzeigen" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
+    '<button class="button button-secondary" id="simex-a-correct" ' + (simexPartAActive.answers[task.id] === undefined || isCorrected ? "disabled" : "") + '>' + (isCorrected ? "Gelöst" : "Lösen") + '</button><button class="button button-primary" id="simex-a-next">' + (simexPartAActive.index === total - 1 ? "Auswertung anzeigen" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
   refreshIcons();
   $$('input[name="simex-answer-' + task.id + '"]', $("#main-content")).forEach(input =>
     input.addEventListener("change", () => {
