@@ -110,9 +110,10 @@ function switchView(view) {
   const icon = viewIcons[view] || "book-open";
   if (view === "modules") {
     const subjects = [
-      ["Elektrotechnik","Grundlagen & Anwendungen","zap",76,"8 Module · 42 Lektionen","subject-orange"],
-      ["Steuerungstechnik","SPS, Schütze & Relais","workflow",52,"6 Module · 31 Lektionen","subject-blue"],
-      ["Technische Mathematik","Formeln & Berechnungen","calculator",34,"5 Module · 26 Lektionen","subject-violet"]
+      ["Elektrotechnische Grundlagen","Strom, Spannung, Leistung & Schaltungen","zap",76,"Grundlagen der Elektrotechnik","subject-orange"],
+      ["Installation & Sicherheit","VDE, Schutzmaßnahmen, Leitungen & Messungen","shield-check",52,"Installation und sicheres Arbeiten","subject-blue"],
+      ["Steuerungs- & Automatisierungstechnik","Schütze, Relais, SPS, Sensoren & Aktoren","workflow",34,"Steuerungen und Automatisierung","subject-violet"],
+      ["Technische Systeme & Praxis","Fehlersuche, Zeichnungen & Inbetriebnahme","factory",20,"Praxisnahe technische Systeme","subject-orange"]
     ];
     const moduleCountBadge = $(".nav-count"); if (moduleCountBadge) moduleCountBadge.textContent = subjects.length;
     $("#main-content").innerHTML = '<section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> DEINE AUSBILDUNG</div><h1>Lernmodule</h1><p>Wähle einen Lernbereich deiner technischen Ausbildung.</p></div></section><section class="subject-grid modules-grid">' + subjects.map(s => '<button class="subject-card" data-subject="' + s[0] + '"><span class="subject-top"><span class="subject-icon ' + s[5] + '"><i data-lucide="' + s[2] + '"></i></span><span class="subject-arrow"><i data-lucide="arrow-up-right"></i></span></span><strong>' + s[0] + '</strong><span class="subject-caption">' + s[1] + '</span><span class="subject-progress"><span class="subject-track"><i style="width:' + s[3] + '%"></i></span><b>' + s[3] + ' %</b></span><span class="subject-meta">' + s[4] + '</span></button>').join("") + '</section>';
