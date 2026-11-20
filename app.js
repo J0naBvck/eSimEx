@@ -369,14 +369,27 @@ function renderSimexPartAQuestion(task, index) {
   const total = simexPartAActive.tasks.length;
   const answered = Object.keys(simexPartAActive.answers).length;
   const progress = Math.round((answered / total) * 100);
+  const isCorrected = simexPartAActive.correctedFor === task.id;
   const options = task.options.map((option, optionIndex) => {
     const selected = simexPartAActive.answers[task.id] === optionIndex;
-    const corrected = simexPartAActive.correctedFor === task.id;
-    const stateClass = corrected && optionIndex === task.correct
-      ? " is-correct"
-      : (corrected && selected ? " is-wrong" : "");
+    const isRightAnswer = isCorrected && optionIndex === task.correct;
+    const isSelectedRight = isRightAnswer && selected;
+    const isSelectedWrong = isCorrected && selected && optionIndex !== task.correct;
+    const isUnselectedSolution = isRightAnswer && !selected;
+    const stateClass = isSelectedRight
+      ? " is-correct is-selected-correct"
+      : (isSelectedWrong
+        ? " is-wrong is-selected-wrong"
+        : (isUnselectedSolution ? " is-solution" : ""));
+    const status = isSelectedRight
+      ? '<span class="simex-a-answer-status is-correct"><span>✓</span> Richtig</span>'
+      : (isSelectedWrong
+        ? '<span class="simex-a-answer-status is-wrong"><span>×</span> Deine Antwort</span>'
+        : (isUnselectedSolution
+          ? '<span class="simex-a-answer-status is-solution"><span>✓</span> Richtige Lösung</span>'
+          : ""));
     return '<label class="simex-a-answer' + stateClass + '"><input type="radio" name="simex-answer-' + simexPartAEscape(task.id) + '" value="' + optionIndex + '" ' +
-      (selected ? "checked" : "") + '><span class="simex-a-answer-letter">' + String.fromCharCode(65 + optionIndex) + '</span><span>' + simexPartAEscape(option) + '</span></label>';
+      (selected ? "checked" : "") + '><span class="simex-a-answer-letter">' + String.fromCharCode(65 + optionIndex) + '</span><span class="simex-a-answer-text">' + simexPartAEscape(option) + '</span>' + status + '</label>';
   }).join("");
   const scratch = task.givens ? '<div class="simex-a-givens"><div><span class="simex-a-stimulus-label">GEGEBEN</span>' +
     task.givens.map(pair => '<span><small>' + simexPartAEscape(pair[0]) + '</small><strong>' + simexPartAEscape(pair[1]) + '</strong></span>').join("") +
@@ -409,7 +422,7 @@ function renderSimexPartASession() {
     '<section class="page-heading simex-a-session-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> PRÜFUNGSSIMULATION · TEIL A</div><h1>Gebundene Aufgaben</h1><p>AP1-Fragenpool · ' + total + ' zufällig ausgewählte Aufgaben</p></div><button class="button simex-a-exit" id="simex-a-exit"><i data-lucide="x"></i> Beenden</button></section>' +
     renderSimexPartAQuestion(task, simexPartAActive.index) +
     '<div class="simex-a-controls"><button class="button simex-a-exit" id="simex-a-prev" ' + (simexPartAActive.index === 0 ? "disabled" : "") + '><i data-lucide="chevron-left"></i> Zurück</button>' +
-    '<button class="button button-secondary" id="simex-a-correct" ' + (simexPartAActive.answers[task.id] === undefined ? "disabled" : "") + '>Korrigieren</button><button class="button button-primary" id="simex-a-next" ' + (!isCorrected ? "disabled" : "") + '>' + (simexPartAActive.index === total - 1 ? "Auswertung anzeigen" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
+    '<button class="button button-secondary" id="simex-a-correct" ' + (simexPartAActive.answers[task.id] === undefined || isCorrected ? "disabled" : "") + '>' + (isCorrected ? "Korrigiert" : "Korrigieren") + '</button><button class="button button-primary" id="simex-a-next" ' + (!isCorrected ? "disabled" : "") + '>' + (simexPartAActive.index === total - 1 ? "Auswertung anzeigen" : "Nächste Aufgabe") + ' <i data-lucide="chevron-right"></i></button></div>';
   refreshIcons();
   $$('input[name="simex-answer-' + task.id + '"]', $("#main-content")).forEach(input =>
     input.addEventListener("change", () => {
